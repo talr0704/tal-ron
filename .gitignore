@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env*
+!.env.example
+*.log
+.firebase/
+functions/node_modules/
+service-account*.json
+playwright-report/
+test-results/
