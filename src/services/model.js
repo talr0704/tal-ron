@@ -11,13 +11,26 @@ export function token() {
   ).join("");
 }
 export function messageFor(inv, event, type, style, url) {
-  const lead =
-    style === "formal" ? `${inv.name} שלום רב,` : `היי ${inv.name} 💛`;
-  const body =
-    type === "initial"
-      ? `אנחנו מתחתנים! נשמח לחגוג איתכם את החתונה של ${event.names} ב־${event.date.split("-").reverse().join(".")} ב${event.venue}, בשעה ${event.time}.`
-      : type === "pending"
-        ? "נשמח לדעת אם תוכלו להגיע ולחגוג איתנו."
-        : "סימנתם אולי — נשמח לעדכון אם תוכלו להגיע לחגיגה.";
-  return `${lead}\n${body}\nאישור הגעה באתר בלבד:\n${url}\nמחכים לכם, ${event.names}`;
+  const date = event.date.split("-").reverse().join(".");
+  const formal = style === "formal";
+  const lead = formal ? `${inv.name} שלום רב,` : `היי ${inv.name} 💛`;
+  const messages = {
+    initial: {
+      casual: `אנחנו מתחתנים! 💍\nנשמח שתהיו איתנו ביום המיוחד שלנו, ${event.names}.\nנפגשים ב־${date} ב${event.venue}, ${event.address}.\nקבלת פנים בשעה ${event.time}. ${event.parking}.`,
+      formal: `אנו שמחים להזמינכם לחגוג עמנו את חתונתם של ${event.names}, שתתקיים בתאריך ${date} ב${event.venue}, ${event.address}.\nקבלת הפנים תחל בשעה ${event.time}. ${event.parking}.\nנשמח לכבד את האירוע בנוכחותכם.`,
+    },
+    pending: {
+      casual: `תזכורת קטנה עם הרבה אהבה 🌿\nהחתונה של ${event.names} ב־${date} מתקרבת, ועדיין לא קיבלנו את התשובה שלכם.\nתוכלו להגיע ולחגוג איתנו? נשמח לעדכון בקישור האישי.`,
+      formal: `לקראת חתונתם של ${event.names} בתאריך ${date}, נבקש להזכיר כי טרם התקבל אישור הגעתכם.\nנודה לעדכון תשובתכם באמצעות הקישור האישי, כדי שנוכל להיערך לקבלתכם.`,
+    },
+    maybe: {
+      casual: `נשמח להפוך את ה״אולי״ שלכם ל״ברור שמגיעים״ 😊\nסימנתם אולי לחתונה שלנו ב־${date}. אם כבר יודעים, נשמח שתעדכנו את התשובה בקישור האישי.\nמקווים לחגוג איתכם!`,
+      formal: `בהמשך לתשובתכם ״אולי״ להזמנה לחתונתם של ${event.names} בתאריך ${date}, נשמח לקבל עדכון בנוגע להשתתפותכם.\nניתן לעדכן את התשובה באמצעות הקישור האישי המצורף.`,
+    },
+  };
+  const body = messages[type][formal ? "formal" : "casual"];
+  const signoff = formal
+    ? `בברכה ובציפייה לראותכם, ${event.names}`
+    : `מחכים לכם באהבה, ${event.names} 🤍`;
+  return `${lead}\n\n${body}\n\nאישור הגעה באתר בלבד:\n${url}\n\n${signoff}`;
 }

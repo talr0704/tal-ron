@@ -46,6 +46,20 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
   await page.getByRole("button", { name: "ייצוא CSV" }).click();
   expect((await download).suggestedFilename()).toBe("tal-ron-guests.csv");
   await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
+  await expect(page.locator(".message-example")).toHaveCount(2);
+  await expect(page.locator(".message-examples")).toContainText(
+    "{הקישור האישי}",
+  );
+  await page.getByLabel("תבנית", { exact: true }).selectOption("pending");
+  await expect(page.locator(".message-examples")).toContainText(
+    "טרם התקבל אישור הגעתכם",
+  );
+  await page.getByLabel("תבנית", { exact: true }).selectOption("maybe");
+  await expect(page.locator(".message-examples")).toContainText(
+    "בהמשך לתשובתכם ״אולי״",
+  );
+  await page.getByLabel("תבנית", { exact: true }).selectOption("initial");
+
   await page
     .locator(".recipient")
     .filter({ hasText: "בדיקת אורח" })

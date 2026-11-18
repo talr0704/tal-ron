@@ -6,6 +6,7 @@ import { parseGuests, exportGuests } from "../services/csv";
 import Field from "../components/Field";
 import Arrow from "../components/Arrow";
 import GuestCounts from "../components/GuestCounts";
+import MessageExamples from "../components/MessageExamples";
 const blank = {
   name: "",
   phone: "",
@@ -377,6 +378,16 @@ export default function Admin() {
                   </select>
                 </Field>
               </div>
+              <MessageExamples
+                event={event}
+                type={type}
+                style={style}
+                onSelect={(next) => {
+                  setStyle(next);
+                  setPreview(null);
+                }}
+              />
+              <h3>בחירת מוזמנים להכנת הודעה אישית</h3>
               {guests
                 .filter(
                   (g) =>
