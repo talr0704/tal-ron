@@ -13,7 +13,8 @@ import {
   connectFunctionsEmulator,
 } from "firebase/functions";
 import { demo } from "./demo";
-export const isDemo = import.meta.env.VITE_DEMO_MODE !== "false";
+export const isDemo =
+  import.meta.env.DEV && import.meta.env.VITE_DEMO_MODE !== "false";
 let auth, functions;
 if (!isDemo) {
   const app = initializeApp({

@@ -97,3 +97,7 @@ npm run test:integration
 - Analytics לא הופעל; מזהה המדידה אינו נחוץ לאישורי הגעה.
 
 טרם הפעלה אמיתית יש ליצור Firestore במצב production, להפעיל Email/Password ב־Authentication, ליצור מנהל ולהעניק custom claim, ולפרוס את כללי Firestore ופונקציות השרת. פריסת Functions דורשת תוכנית Blaze. גם אתר שנבנה עם ההגדרות אינו יכול לקרוא אירוע או לשמור תשובות לפני פריסת הפונקציות. לא בוצעו פריסה או שליחת הודעות בעת הגדרת החיבור.
+
+## מניעת פרסום של מצב הדגמה
+
+מצב הדגמה זמין רק בשרת הפיתוח של Vite. כל build לייצור משתמש ב־Firebase ובבדיקת הרשאת `admin`, ללא עקיפת התחברות. הבנייה נעצרת אם חסרים פרטי Firebase, אם מוגדר `VITE_DEMO_MODE=true` או אם מופעלים אמולטורים. יש להגדיר `VITE_DEMO_MODE=false` ו־`VITE_USE_EMULATORS=false` בקובץ `.env.production.local` יחד עם הגדרות Firebase. פקודת Firebase Hosting מפעילה build חדש אוטומטית לפני כל פריסה, כדי למנוע העלאת `dist` ישן ממצב הדגמה.
