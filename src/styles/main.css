@@ -547,20 +547,25 @@ td button {
   gap: 18px;
 }
 .message-example {
-  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #d5dcd2;
   border-radius: 8px;
   padding: 20px;
-  background: #f8f9f2;
+  background: #fffdf9;
 }
 .message-example.chosen {
-  border-color: var(--green);
+  border-color: #2c6750;
+  background: #e6f1e9;
+  box-shadow: 0 0 0 1px #2c6750;
 }
 .message-example h4 {
-  margin: 0 0 16px;
+  margin: 0;
   font-size: 16px;
   font-weight: 500;
 }
 .message-text {
+  flex: 1;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-size: 14px;
@@ -569,6 +574,55 @@ td button {
 }
 .message-example .toolbar {
   margin-bottom: 0;
+  padding-top: 16px;
+  border-top: 1px solid #cbd6c9;
+}
+.example-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 30px;
+  margin-bottom: 16px;
+}
+.example-selected-badge {
+  background: #24543f;
+  color: #fff;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.message-example .example-select {
+  background: #315b48;
+  border: 2px solid #315b48;
+  color: #fff;
+  font-weight: 500;
+  min-height: 44px;
+}
+.message-example .example-select:hover {
+  background: #214331;
+  border-color: #214331;
+}
+.message-example .example-select[aria-pressed="true"] {
+  background: #173f2e;
+  border-color: #173f2e;
+}
+.message-example .example-copy {
+  background: #fff;
+  color: #263e30;
+  border: 2px solid #829480;
+  font-weight: 500;
+  min-height: 44px;
+}
+.message-example .example-copy:hover {
+  background: #f0f4ec;
+  border-color: #315b48;
+}
+.message-example button:focus-visible {
+  outline: 3px solid #193f70;
+  outline-offset: 3px;
 }
 @media (max-width: 850px) {
   .example-grid {

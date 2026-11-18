@@ -30,11 +30,19 @@ export default function MessageExamples({ event, type, style, onSelect }) {
               className={`message-example ${style === id ? "chosen" : ""}`}
               key={id}
             >
-              <h4>{title}</h4>
+              <div className="example-heading">
+                <h4>{title}</h4>
+                {style === id && (
+                  <span className="example-selected-badge">
+                    <span aria-hidden="true">✓</span> נבחר
+                  </span>
+                )}
+              </div>
               <p className="message-text">{text}</p>
               <div className="toolbar">
                 <button
                   type="button"
+                  className="example-select"
                   aria-pressed={style === id}
                   onClick={() => onSelect(id)}
                 >
@@ -42,6 +50,7 @@ export default function MessageExamples({ event, type, style, onSelect }) {
                 </button>
                 <button
                   type="button"
+                  className="example-copy"
                   onClick={async () => {
                     try {
                       await navigator.clipboard.writeText(text);
