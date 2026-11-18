@@ -529,7 +529,7 @@ export default function Admin() {
                 </Field>
                 <p>
                   אין להסיר סוג מנה שכבר נבחר בהזמנה. לשינוי האיור, החליפו את
-                  public/couple.svg או עדכנו את הנתיב.
+                  public/images/couple.svg או עדכנו את הנתיב.
                 </p>
                 <button disabled={busy} className="button">
                   שמירת פרטי האירוע

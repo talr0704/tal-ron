@@ -5,7 +5,7 @@ export const defaultEvent = {
   venue: "אולם דואאה (DUEE)",
   address: "המאה ועשרים 6, ראשון לציון",
   parking: "חניה מול האולם",
-  image: "/couple.svg",
+  image: "/images/couple.svg",
   meals: ["רגילה", "צמחונית", "טבעונית", "ללא גלוטן"],
 };
 export function validateResponse(data, inv, event) {

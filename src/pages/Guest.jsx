@@ -82,7 +82,7 @@ export default function Guest() {
             <div className="hero-art">
               <img
                 className="garden-background"
-                src="/wedding-garden.webp"
+                src="/images/wedding-garden.webp"
                 alt=""
                 fetchPriority="high"
                 width="1024"
@@ -91,7 +91,11 @@ export default function Guest() {
               <div className="art-dedication">סיפור האהבה שלנו</div>
               <img
                 className="couple"
-                src={event.image || "/couple.svg"}
+                src={
+                  event.image === "/couple.svg"
+                    ? "/images/couple.svg"
+                    : event.image || "/images/couple.svg"
+                }
                 alt="איור זוגי של טל ורון"
               />
               <span className="art-caption">ועכשיו, לפרק הכי יפה</span>

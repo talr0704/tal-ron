@@ -27,7 +27,19 @@
         ]
       }
     ],
-    "predeploy": ["npm run build"]
+    "predeploy": ["npm run build"],
+    "redirects": [
+      {
+        "source": "/couple.svg",
+        "destination": "/images/couple.svg",
+        "type": 301
+      },
+      {
+        "source": "/wedding-garden.webp",
+        "destination": "/images/wedding-garden.webp",
+        "type": 301
+      }
+    ]
   },
   "firestore": {
     "rules": "firestore.rules"
