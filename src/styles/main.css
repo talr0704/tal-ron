@@ -526,3 +526,14 @@ td button {
     height: 110px;
   }
 }
+
+.guest-counts {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  white-space: nowrap;
+  line-height: 1.7;
+}
+.guest-counts strong {
+  font-weight: 500;
+}

@@ -5,6 +5,7 @@ import { statuses, messageFor } from "../services/model";
 import { parseGuests, exportGuests } from "../services/csv";
 import Field from "../components/Field";
 import Arrow from "../components/Arrow";
+import GuestCounts from "../components/GuestCounts";
 const blank = {
   name: "",
   phone: "",
@@ -274,7 +275,7 @@ export default function Admin() {
                         "שם",
                         "צד",
                         "תשובה",
-                        "מכסה: מבוגרים / ילדים / עד 5",
+                        "מכסת ההזמנה",
                         "מגיעים",
                         "פעולות",
                       ].map((x) => (
@@ -298,12 +299,22 @@ export default function Admin() {
                           </span>
                         </td>
                         <td>
-                          {g.maxAdults} / {g.maxChildren} / {g.maxUnder5}
+                          <GuestCounts
+                            adults={g.maxAdults}
+                            children={g.maxChildren}
+                            under5={g.maxUnder5}
+                          />
                         </td>
                         <td>
-                          {g.response
-                            ? `${g.response.adults} + ${g.response.children} + ${g.response.under5}`
-                            : "—"}
+                          {g.response ? (
+                            <GuestCounts
+                              adults={g.response.adults}
+                              children={g.response.children}
+                              under5={g.response.under5}
+                            />
+                          ) : (
+                            "טרם השיבו"
+                          )}
                           {g.response?.note && (
                             <small className="block">{g.response.note}</small>
                           )}

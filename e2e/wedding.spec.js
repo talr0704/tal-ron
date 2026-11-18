@@ -124,7 +124,7 @@ test("event editing and CSV import update guest interface without rebuild", asyn
   await expect(page.getByRole("status")).toContainText("הייבוא הושלם");
   await expect(
     page.locator("tr").filter({ hasText: "אורחת חדשה" }),
-  ).toContainText("1 / 0 / 0");
+  ).toContainText("מבוגרים: 1");
   await page.getByRole("button", { name: "פרטי האירוע" }).click();
   await page.getByLabel("קבלת פנים", { exact: true }).fill("19:00");
   await page.getByRole("button", { name: "שמירת פרטי האירוע" }).click();
