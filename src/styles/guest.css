@@ -1,0 +1,521 @@
+/* Guest invitation styles are scoped to preserve the administration dashboard. */
+.guest-site {
+  --green: #4f6c58;
+  --line: #d9dfd2;
+  color: #344638;
+  background: #faf7f0;
+  background-image: radial-gradient(#d7cbb51a 0.65px, transparent 0.65px);
+  background-size: 5px 5px;
+}
+.guest-site .top {
+  max-width: 1280px;
+  margin: auto;
+  padding: 22px 5%;
+  border-color: #d9dfd299;
+  font-size: 12px;
+  letter-spacing: 0.7px;
+}
+.guest-site .top > a:first-child {
+  font-family: "Noto Serif Hebrew", serif;
+  font-size: 25px;
+}
+.guest-site .top > a:last-child {
+  background: #edf0e5;
+  border: 1px solid #cfd9c8;
+  border-radius: 30px;
+  padding: 9px 18px;
+  text-decoration: none;
+  letter-spacing: 0;
+}
+.guest-site .demo {
+  background: #e7eddc;
+  color: #4c6045;
+}
+.guest-site .hero {
+  position: relative;
+  max-width: 1250px;
+  margin: auto;
+  padding: 52px 6% 68px;
+  background: none;
+  overflow: hidden;
+}
+.guest-site .hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 8%;
+  position: relative;
+  z-index: 1;
+}
+.guest-site .hero-art {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  aspect-ratio: 2/3;
+  justify-self: center;
+  border-radius: 46% 46% 8px 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px #46513b12;
+  isolation: isolate;
+}
+.guest-site .garden-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+.guest-site .couple {
+  position: absolute;
+  width: 74%;
+  height: 39%;
+  object-fit: contain;
+  inset: 36% 13% auto;
+  margin: 0;
+  mix-blend-mode: multiply;
+}
+.guest-site .art-dedication {
+  position: absolute;
+  top: 28%;
+  width: 100%;
+  font-family: "Noto Serif Hebrew", serif;
+  font-size: clamp(14px, 1.6vw, 19px);
+  color: #667356;
+}
+.guest-site .art-caption {
+  position: absolute;
+  top: 75%;
+  width: 100%;
+  right: 0;
+  font-size: 11px;
+  color: #536249;
+  letter-spacing: 1.3px;
+}
+.guest-site .hero-copy {
+  text-align: center;
+  padding: 25px 0;
+}
+.guest-site .eyebrow {
+  font-size: 11px;
+  letter-spacing: 1.6px;
+  color: #65745d;
+  line-height: 1.8;
+}
+.guest-site .hero h1 {
+  font-size: clamp(65px, 7.7vw, 104px);
+  letter-spacing: -3px;
+  line-height: 1.55;
+  margin: 12px -10px 0;
+  white-space: nowrap;
+}
+.guest-site .script {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-size: 23px;
+  color: #73856a;
+  margin: 2px 0 32px;
+}
+.guest-site .script span {
+  width: 36px;
+  height: 1px;
+  background: #bac7ae;
+}
+.guest-site .date {
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: #3e5342;
+}
+.guest-site .hero-location {
+  font-size: 13px;
+  margin: 12px 0 0;
+  color: #687761;
+}
+.guest-site .intro {
+  margin: 27px 0;
+  font-size: 15px;
+  line-height: 2.1;
+  color: #53624c;
+}
+.guest-site .guest-primary {
+  border-radius: 30px;
+  border: 1px solid #4f6c58;
+  background: #4f6c58;
+  color: white;
+  min-height: 48px;
+  padding: 13px 28px;
+  box-shadow: 0 5px 13px #43593c13;
+}
+.guest-site .guest-primary:hover {
+  background: #3d5746;
+  border-color: #3d5746;
+}
+.guest-site .guest-primary:focus-visible {
+  outline: 3px solid #876d48;
+  outline-offset: 4px;
+}
+.guest-site .hero-signature {
+  margin-top: 17px;
+  font-size: 11px;
+  color: #78836c;
+}
+.guest-site .botanical {
+  width: 85px;
+  height: 130px;
+  color: #98ac89;
+  pointer-events: none;
+}
+.guest-site .hero-sprig {
+  position: absolute;
+  bottom: 5px;
+  left: 2%;
+  width: 100px;
+  height: 150px;
+  transform: rotate(-25deg);
+  opacity: 0.55;
+}
+.guest-site .event-overview {
+  position: relative;
+  padding: 60px max(5%, calc((100% - 1100px) / 2)) 66px;
+  background: #eaf0e4;
+  border-top: 1px solid #dae3d2;
+  border-bottom: 1px solid #dae3d2;
+  text-align: center;
+}
+.guest-site .section-intro h2 {
+  font-size: 32px;
+  margin: 12px 0 4px;
+  color: #3f5745;
+}
+.guest-site .little-heart {
+  font-size: 26px;
+  color: #9a866e;
+}
+.guest-site .details {
+  background: none;
+  padding: 24px 0 0;
+  gap: 20px;
+  align-items: stretch;
+}
+.guest-site .details > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #d4decb;
+  border-radius: 90px 90px 12px 12px;
+  padding: 32px 18px 26px;
+  background: #fafbf5;
+}
+.guest-site .event-icon {
+  display: block;
+  color: #6f8864;
+  margin-bottom: 15px;
+}
+.guest-site .details small {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #708067;
+}
+.guest-site .details h2 {
+  font-size: 24px;
+  line-height: 1.7;
+  margin: 10px 0 3px;
+}
+.guest-site .details p {
+  font-size: 13px;
+  color: #6b7662;
+}
+.guest-site .details a {
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 20px;
+  margin-top: 9px;
+  border: 1px solid #9aaf8c;
+  border-radius: 25px;
+  text-decoration: none;
+  color: #3e5c40;
+  background: #eef3e8;
+}
+.guest-site .details a:hover {
+  background: #dce8d4;
+}
+.guest-site .rsvp {
+  position: relative;
+  max-width: none;
+  padding: 76px 24px 88px;
+  scroll-margin-top: 20px;
+}
+.guest-site .rsvp-card {
+  position: relative;
+  max-width: 760px;
+  padding: 56px 50px 46px;
+  margin: auto;
+  background: #fffef9;
+  border: 1px solid #d9dfce;
+  border-radius: 140px 140px 18px 18px;
+  box-shadow: 0 8px 40px #40512d06;
+}
+.guest-site .rsvp-sprig {
+  width: 36px;
+  height: 54px;
+  margin-bottom: 12px;
+  transform: rotate(-12deg);
+}
+.guest-site .rsvp h2 {
+  font-size: 40px;
+  margin: 12px 0 22px;
+  color: #3b513e;
+}
+.guest-site .rsvp form > .personal-greeting {
+  font-size: 15px;
+  color: #617058;
+  padding: 0 0 16px;
+  margin: 0 0 25px;
+  border-bottom: 1px solid #e4e7db;
+}
+.guest-site .choices {
+  gap: 12px;
+  margin: 20px 0 30px;
+}
+.guest-site .choices label {
+  border: 1px solid #cdd7c6;
+  border-radius: 12px;
+  background: #f9faf5;
+  font-size: 14px;
+  padding: 16px 8px;
+  min-height: 52px;
+}
+.guest-site .choices .selected {
+  border-color: #4f6c58;
+  background: #e5eedf;
+  box-shadow: 0 0 0 1px #4f6c58;
+  color: #2e5036;
+}
+.guest-site .choices label:focus-within {
+  outline: 3px solid #a58d68;
+  outline-offset: 3px;
+}
+.guest-site .choices input {
+  accent-color: #4f6c58;
+}
+.guest-site .form-section-title {
+  font-family: Heebo, Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  margin: 24px 0 4px;
+  color: #425b45;
+}
+.guest-site .field {
+  font-size: 13px;
+  margin: 12px 0 16px;
+}
+.guest-site select,
+.guest-site textarea {
+  background: #fcfcf7;
+  border: 1px solid #cdd7c6;
+  border-radius: 9px;
+  min-height: 46px;
+}
+.guest-site textarea {
+  min-height: 100px;
+}
+.guest-site select:focus,
+.guest-site textarea:focus {
+  outline: 2px solid #6e8a60;
+  outline-offset: 2px;
+}
+.guest-site .grid3 {
+  gap: 14px;
+}
+.guest-site .mealgrid {
+  border-bottom: 1px solid #e5e8dd;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+.guest-site .submit-rsvp {
+  width: 100%;
+  margin-top: 8px;
+}
+.guest-site .rsvp [role="status"] {
+  border-top: 1px solid #e2e7d8;
+  padding-top: 16px;
+}
+.guest-site .rsvp [role="status"] h3 {
+  font-size: 25px;
+}
+.guest-site .rsvp button:not(.button) {
+  border-radius: 25px;
+  background: #ecf2e5;
+  border-color: #a3b598;
+  color: #3e5c40;
+}
+.guest-site footer {
+  padding: 35px 20px 28px;
+  background: #eaf0e4;
+  border-top: 1px solid #d6dfcc;
+  color: #65775c;
+}
+.guest-site .footer-monogram {
+  display: block;
+  font-family: "Noto Serif Hebrew", serif;
+  font-size: 33px;
+  color: #476247;
+}
+.guest-site footer p {
+  font-size: 13px;
+  margin: 12px 0 5px;
+}
+.guest-site footer > span:not(.footer-monogram) {
+  font-size: 12px;
+}
+.guest-site footer a {
+  font-size: 11px;
+  color: #56694f;
+}
+@media (min-width: 851px) {
+  .guest-site .grid3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 850px) {
+  .guest-site .top {
+    padding: 16px 5%;
+    font-size: 10px;
+    gap: 10px;
+  }
+  .guest-site .top > a:first-child {
+    font-size: 21px;
+    white-space: nowrap;
+  }
+  .guest-site .top > a:last-child {
+    padding: 8px 11px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  .guest-site .top > span {
+    font-size: 10px;
+    white-space: nowrap;
+    letter-spacing: 0;
+  }
+  .guest-site .hero {
+    padding: 26px 22px 42px;
+  }
+  .guest-site .hero-layout {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .guest-site .hero-art {
+    max-width: 300px;
+    aspect-ratio: 5/6;
+  }
+  .guest-site .garden-background {
+    object-position: center 40%;
+  }
+  .guest-site .art-dedication {
+    top: 24%;
+    font-size: 15px;
+  }
+  .guest-site .couple {
+    top: 32%;
+    height: 43%;
+  }
+  .guest-site .art-caption {
+    top: 76%;
+    font-size: 10px;
+  }
+  .guest-site .hero-copy {
+    padding: 22px 0 3px;
+  }
+  .guest-site .hero h1 {
+    font-size: 72px;
+    margin: 6px 0 0;
+    line-height: 1.45;
+  }
+  .guest-site .script {
+    font-size: 20px;
+    margin: 0 0 21px;
+  }
+  .guest-site .date {
+    font-size: 20px;
+    letter-spacing: 2.5px;
+  }
+  .guest-site .intro {
+    font-size: 14px;
+    margin: 20px 0;
+  }
+  .guest-site .hero-signature {
+    margin-top: 13px;
+  }
+  .guest-site .hero-sprig {
+    width: 60px;
+    height: 90px;
+    left: -13px;
+    bottom: 40px;
+    opacity: 0.35;
+  }
+  .guest-site .event-overview {
+    padding: 40px 22px 44px;
+  }
+  .guest-site .section-intro h2 {
+    font-size: 28px;
+  }
+  .guest-site .details {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding-top: 16px;
+  }
+  .guest-site .details > div {
+    border-radius: 18px;
+    padding: 24px 20px;
+  }
+  .guest-site .event-icon {
+    margin-bottom: 10px;
+  }
+  .guest-site .details h2 {
+    font-size: 23px;
+  }
+  .guest-site .rsvp {
+    padding: 40px 14px 46px;
+  }
+  .guest-site .rsvp-card {
+    border-radius: 80px 80px 16px 16px;
+    padding: 36px 20px 28px;
+  }
+  .guest-site .rsvp h2 {
+    font-size: 34px;
+  }
+  .guest-site .choices {
+    gap: 8px;
+  }
+  .guest-site .choices label {
+    padding: 15px 3px;
+    font-size: 13px;
+  }
+  .guest-site .choices input {
+    margin-left: 5px;
+  }
+  .guest-site .grid3 {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .guest-site .mealgrid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .guest-site .eyebrow {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+}
+@media (max-width: 360px) {
+  .guest-site .hero h1 {
+    font-size: 61px;
+  }
+  .guest-site .choices label {
+    font-size: 12px;
+  }
+}

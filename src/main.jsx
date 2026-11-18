@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Guest from "./pages/Guest";
 import Admin from "./pages/Admin";
 import "./styles/main.css";
+import "./styles/guest.css";
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
