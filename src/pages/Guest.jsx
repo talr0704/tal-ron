@@ -3,18 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import { api, isDemo } from "../services/api";
 import { useEvent } from "../hooks/useEvent";
 import Field from "../components/Field";
-import {
-  Art,
-  Bloom,
-  Couple,
-  HeaderDoves,
-  preloadBloom,
-} from "../components/Gouache";
+import Botanical from "../components/Botanical";
+import { Art, Bloom, Couple, preloadBloom } from "../components/Gouache";
 
 const choices = [
-  { value: "yes", label: "מגיעים!", icon: "tick" },
-  { value: "maybe", label: "אולי", icon: "heart" },
-  { value: "no", label: "לא נוכל להגיע", icon: "flower" },
+  { value: "yes", label: "מגיעים!" },
+  { value: "maybe", label: "אולי" },
+  { value: "no", label: "לא נוכל להגיע" },
 ];
 const emptyForm = {
   status: "",
@@ -163,9 +158,7 @@ function Invitation({ token }) {
     <div className="guest-site" dir="rtl">
       <main className="invitation-layout">
         <header className="invitation-hero">
-          <Art name="cloud-left" className="hero-cloud hero-cloud-left" />
-          <Art name="cloud-right" className="hero-cloud hero-cloud-right" />
-          <HeaderDoves />
+          <Art name="hero-doves-ribbon" className="hero-doves-ribbon" />
           <h1>
             החתונה של <strong>{event.names}</strong>
           </h1>
@@ -263,7 +256,7 @@ function Invitation({ token }) {
                   תשובת ההגעה שלכם
                 </legend>
                 <div className="attendance-choices" ref={choiceGroup}>
-                  {choices.map(({ value, label, icon }) => (
+                  {choices.map(({ value, label }) => (
                     <label
                       key={value}
                       className={`attendance-choice choice-${value}`}
@@ -275,7 +268,6 @@ function Invitation({ token }) {
                         checked={form.status === value}
                         onChange={() => choose(value)}
                       />
-                      <Art name={`icon-${icon}`} className="choice-icon" />
                       <span>{label}</span>
                       <span className="selection-mark" aria-hidden="true">
                         ✓
@@ -352,8 +344,13 @@ function Invitation({ token }) {
           className="invitation-logistics"
           aria-labelledby="arrival-information"
         >
-          <h2 id="arrival-information">פרטי האירוע</h2>
+          <h2 id="arrival-information">
+            <Botanical className="event-sprig" />
+            פרטי האירוע
+            <Botanical className="event-sprig" />
+          </h2>
           <div className="ceremony-scene">
+            <Art name="event-chuppah" className="event-chuppah" />
             <div className="event-directions">
               <p className="wedding-venue">
                 <Art name="event-pin" className="event-detail-icon" />

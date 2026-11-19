@@ -6,15 +6,7 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
     page.getByRole("heading", { name: "החתונה של טל ורון", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".rsvp-greeting")).toHaveText("היי, נועה ישראלי!");
-  for (const [choice, icon] of [
-    ["yes", "tick"],
-    ["maybe", "heart"],
-    ["no", "flower"],
-  ]) {
-    await expect(
-      page.locator(`.attendance-choice.choice-${choice} img`),
-    ).toHaveAttribute("src", `/images/gouache/icon-${icon}.webp`);
-  }
+  await expect(page.locator(".attendance-choice img")).toHaveCount(0);
   await expect(page.locator(".saved-confirmation-icon")).toHaveCount(0);
   await page.getByRole("radio", { name: "מגיעים!" }).check();
   await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("1");
@@ -239,6 +231,10 @@ test("personal invitation fits at both widths and retains a keyboard draft after
     expect(greeting.y).toBeGreaterThanOrEqual(portrait.y + portrait.height);
     expect(greeting.y + greeting.height).toBeLessThan(yes.y);
     expect(details.y).toBeGreaterThan(yes.y + yes.height);
+    const chuppah = await page.locator(".event-chuppah").boundingBox();
+    const eventText = await page.locator(".event-directions").boundingBox();
+    expect(chuppah.x).toBeGreaterThanOrEqual(eventText.x + eventText.width);
+    expect(chuppah.y).toBeLessThan(eventText.y + eventText.height);
 
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),

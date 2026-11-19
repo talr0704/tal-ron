@@ -1,14 +1,17 @@
 /* The gouache invitation is only used by the guest routes. */
 .guest-site {
-  --ink: #233e24;
-  --paper: #fff6e8;
+  --ink: #294610;
+  --paper: #fbf3df;
   --leaf: #385e2d;
   --focus: #3f507c;
   min-height: 100vh;
   color: var(--ink);
   background-color: var(--paper);
-  background-image: radial-gradient(#a4804d26 0.5px, transparent 0.7px);
-  background-size: 5px 5px;
+  background-image: radial-gradient(
+    ellipse at 49% 65%,
+    #fff9ec,
+    transparent 80%
+  );
 }
 
 .guest-site :is(button, a, input, select, textarea):focus-visible,
@@ -21,11 +24,10 @@
   position: relative;
   isolation: isolate;
   text-align: center;
-  padding: 19px 0 0;
+  padding: 4px 0 0;
   overflow: hidden;
   background:
-    linear-gradient(0deg, var(--paper), transparent 17%),
-    radial-gradient(ellipse 300px 165px at 50% 0, #fff6e8 14%, transparent 97%),
+    linear-gradient(0deg, var(--paper), transparent 12%),
     url("/images/gouache/floral-meadow.webp") center 47% / cover no-repeat,
     #d5e49c;
 }
@@ -34,25 +36,35 @@
   position: relative;
   margin: 0 auto;
   max-width: 80%;
-  font-size: 1.2rem;
-  line-height: 1.18;
+  font-size: clamp(1.45rem, 6.8vw, 2.9rem);
+  font-weight: 500;
+  line-height: 1.1;
+  transform: skewX(-8deg);
 }
 
 .guest-site .invitation-hero h1 strong {
   display: block;
-  font-size: clamp(2.35rem, 10vw, 3.4rem);
-  font-weight: 600;
+  margin-top: 2px;
+  color: #fffef7;
+  font-size: clamp(3.65rem, 15vw, 6.5rem);
+  font-weight: 700;
+  text-shadow: 0 2px 7px #29461065;
+}
+
+.guest-site .hero-doves-ribbon {
+  display: block;
+  width: min(80%, 490px);
+  height: auto;
+  margin: 0 auto;
 }
 
 .guest-site .wedding-date {
   display: inline-block;
-  background: #ffe293;
-  border-radius: 45% 25% 45% 23% / 15% 35% 15% 40%;
-  padding: 1px 21px;
-  margin-top: 4px;
-  font-size: 1.08rem;
-  font-weight: 500;
-  letter-spacing: 0.07em;
+  margin-top: 0;
+  font-size: clamp(1.35rem, 6vw, 2.6rem);
+  font-weight: 600;
+  line-height: 1.05;
+  transform: skewX(-8deg);
 }
 
 .guest-site .wedding-venue,
@@ -65,32 +77,6 @@
 
 .guest-site .wedding-time {
   font-size: 0.92rem;
-}
-
-.guest-site .hero-cloud {
-  position: absolute;
-  z-index: -1;
-  width: 37%;
-  max-width: 175px;
-  pointer-events: none;
-  animation: gouache-drift 15s ease-in-out infinite alternate;
-}
-
-.guest-site .hero-cloud-left {
-  left: -4%;
-  top: 23%;
-}
-
-.guest-site .hero-cloud-right {
-  right: -4%;
-  top: 48%;
-  animation-delay: -7s;
-}
-
-@keyframes gouache-drift {
-  to {
-    transform: translate(10%, -8%);
-  }
 }
 
 .guest-site .gouache-couple img {
@@ -109,10 +95,10 @@
 
 .guest-site .gouache-couple {
   position: relative;
-  width: min(98%, 550px);
+  width: min(100%, 670px);
   aspect-ratio: 1.27;
-  margin: 7px auto 0;
-  mask-image: linear-gradient(#000 86%, transparent);
+  margin: 4px auto 0;
+  mask-image: linear-gradient(#000 90%, transparent);
 }
 
 .guest-site .couple-portrait {
@@ -228,19 +214,17 @@
 .guest-site .attendance-choice {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, max-content);
   place-content: center;
   align-items: center;
-  gap: clamp(4px, 1vw, 8px);
-  min-height: 54px;
+  min-height: 47px;
   padding: 7px clamp(6px, 2vw, 16px);
   border: 1px solid var(--edge);
   border-radius: 999px;
   background: var(--fill);
   color: var(--ink);
-  font-size: clamp(0.82rem, 3.5vw, 1rem);
+  font-size: clamp(0.88rem, 4.1vw, 1.32rem);
   line-height: 1.15;
-  font-weight: 500;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -254,12 +238,12 @@
 }
 
 .guest-site .choice-yes {
-  --edge: #874b55;
+  --edge: #bd3c50;
   --fill: #dc9da2;
   --pill: url("/images/gouache/button-yes-idle.webp");
   --pressed: url("/images/gouache/button-yes-pressed.webp");
   --selected: url("/images/gouache/button-yes-selected.webp");
-  color: #401d25;
+  color: #820c29;
 }
 
 .guest-site .choice-maybe {
@@ -290,16 +274,6 @@
   position: relative;
 }
 
-.guest-site .choice-icon {
-  width: clamp(13px, 4vw, 19px);
-  max-height: 19px;
-  object-fit: contain;
-  transition: transform 150ms ease;
-}
-
-.guest-site .attendance-choice:active .choice-icon {
-  transform: scale(0.83);
-}
 .guest-site .attendance-choice .selection-mark {
   position: absolute;
   inset-block-start: 2px;
@@ -476,10 +450,6 @@
     transition: none !important;
   }
 
-  .guest-site .attendance-choice:active .choice-icon {
-    transform: none;
-  }
-
   .guest-site .bloom-frame-5 {
     opacity: 1;
   }
@@ -498,65 +468,6 @@
 .guest-site .tentative-details summary:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
-}
-
-.guest-site .greeting-doves {
-  position: absolute;
-  inset: 0;
-  max-width: 800px;
-  margin-inline: auto;
-  direction: ltr;
-  pointer-events: none;
-}
-
-.guest-site .greeting-dove {
-  position: absolute;
-  top: 9px;
-  width: clamp(40px, 13%, 74px);
-  aspect-ratio: 1.2;
-}
-
-.guest-site .greeting-dove-left {
-  left: 5%;
-}
-
-.guest-site .greeting-dove-right {
-  right: 5%;
-  transform: scaleX(-1);
-}
-
-.guest-site .greeting-dove img {
-  position: absolute;
-}
-
-.guest-site .greeting-dove-body {
-  width: 100%;
-  left: 0;
-  top: 32%;
-}
-
-.guest-site .greeting-dove-wing {
-  width: 66%;
-  left: 12%;
-  top: -2%;
-  transform-origin: 80% 85%;
-  animation: greeting-wing 1.9s ease-in-out infinite alternate;
-}
-
-.guest-site .greeting-dove-wing.far-wing {
-  left: 25%;
-  top: -7%;
-  transform-origin: 69% 91%;
-  animation-direction: alternate-reverse;
-}
-
-@keyframes greeting-wing {
-  from {
-    rotate: -7deg;
-  }
-  to {
-    rotate: 9deg;
-  }
 }
 
 .guest-site
@@ -605,42 +516,57 @@
 }
 
 .guest-site .invitation-logistics {
+  width: min(calc(100% - 22px), 720px);
   margin: 0 auto;
-  padding: 14px 0 0;
+  padding: 12px 0 24px;
+  border-top: 1px solid #dbd1ae;
 }
 
 .guest-site .invitation-logistics h2 {
-  margin: 0 0 8px;
-  font-size: 1.4rem;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin: 0 0 10px;
+  font-size: clamp(1.35rem, 6vw, 2.2rem);
+  font-weight: 700;
+}
+
+.guest-site .event-sprig {
+  width: 24px;
+  height: 25px;
+  color: #7d9034;
+  fill: #b5bd65;
+  transform: rotate(63deg);
+}
+
+.guest-site .event-sprig:last-child {
+  transform: scaleX(-1) rotate(63deg);
 }
 
 .guest-site .ceremony-scene {
-  width: min(100%, 660px);
-  margin-inline: auto;
-  padding: clamp(126px, 45vw, 275px) 14px 22px;
-  background:
-    linear-gradient(
-      var(--paper),
-      transparent 17%,
-      transparent 74%,
-      var(--paper)
-    ),
-    url("/images/gouache/garden-ceremony.webp") center 38% / cover no-repeat;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(5px, 2vw, 18px);
+}
+
+.guest-site .event-chuppah {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .guest-site .event-directions {
-  width: min(100%, 330px);
-  margin-inline: auto;
-  padding: 12px 14px;
-  border: 1px solid #dbd1ae;
-  border-radius: 18px;
-  background: var(--paper);
+  min-width: 0;
 }
 
 .guest-site .event-directions p {
-  margin: 3px 0;
-  line-height: 1.4;
+  margin: 5px 0;
+  justify-content: flex-start;
+  text-align: start;
+  font-size: clamp(0.76rem, 3.35vw, 1.2rem);
+  line-height: 1.32;
 }
 
 .guest-site .event-parking .event-detail-icon {
@@ -649,9 +575,11 @@
 }
 
 .guest-site .waze-action {
-  min-width: min(100%, 250px);
+  width: 100%;
+  min-height: 42px;
+  padding-inline: 6px;
   margin-top: 7px;
-  background: radial-gradient(ellipse at 40% 20%, #3b6329, #234922);
+  background: radial-gradient(ellipse at 40% 20%, #4d6619, #344b0c);
   border-color: #1d421d;
   color: var(--paper);
 }
