@@ -50,7 +50,7 @@ test("secure invitation lifecycle, admin checks and Firestore deny rules", async
     name: "בדיקת אמולטור",
     phone: "",
     side: "tal",
-    maxAdults: 1,
+    maxAdults: 2,
     maxChildren: 1,
     maxUnder5: 1,
   };
@@ -69,17 +69,16 @@ test("secure invitation lifecycle, admin checks and Firestore deny rules", async
   );
   const response = {
     status: "yes",
-    adults: 1,
-    children: 1,
-    under5: 1,
-    meals: ["רגילה", "רגילה", "רגילה"],
+    adults: 2,
+    children: 27,
+    under5: 12,
     note: "",
   };
   assert.equal(
     (
       await call("respond", {
         token: g.token,
-        response: { ...response, adults: 2 },
+        response: { ...response, adults: 3 },
       })
     ).status,
     400,
@@ -90,10 +89,10 @@ test("secure invitation lifecycle, admin checks and Firestore deny rules", async
   );
   assert.equal(
     (await call("guestInvitation", { token: g.token })).result.response.under5,
-    1,
+    12,
   );
   assert.equal(
-    (await call("adminSaveGuest", { guest: { ...g, maxChildren: 0 } }, token))
+    (await call("adminSaveGuest", { guest: { ...g, maxAdults: 1 } }, token))
       .status,
     400,
   );

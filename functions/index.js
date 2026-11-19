@@ -34,10 +34,7 @@ async function eventData() {
 }
 function publicGuest(g) {
   return Object.fromEntries(
-    ["name", "maxAdults", "maxChildren", "maxUnder5", "response"].map((k) => [
-      k,
-      g[k] ?? null,
-    ]),
+    ["name", "maxAdults", "response"].map((k) => [k, g[k] ?? null]),
   );
 }
 export const publicEvent = onCall(options, async () => eventData());
@@ -54,15 +51,10 @@ export const respond = onCall(options, async (req) => {
     const t = await tx.get(ref);
     if (!t.exists) throw new HttpsError("not-found", "Invitation not found");
     const gr = db.collection("guests").doc(t.data().guestId),
-      g = await tx.get(gr),
-      ev = await tx.get(db.doc("settings/event"));
+      g = await tx.get(gr);
     if (!g.exists) throw new HttpsError("not-found", "Invitation not found");
     const response = checked(() =>
-      validateResponse(
-        req.data.response,
-        g.data(),
-        ev.exists ? ev.data() : defaultEvent,
-      ),
+      validateResponse(req.data.response, g.data()),
     );
     tx.update(gr, { response, updatedAt: FieldValue.serverTimestamp() });
   });
@@ -91,12 +83,7 @@ export const adminSaveGuest = onCall(options, async (req) => {
       throw new HttpsError("not-found", "Guest not found");
     if (old.exists) {
       const r = old.data().response;
-      if (
-        r &&
-        (r.adults > g.maxAdults ||
-          r.children > g.maxChildren ||
-          r.under5 > g.maxUnder5)
-      )
+      if (r && r.adults > g.maxAdults)
         throw new HttpsError(
           "failed-precondition",
           "Quota is below existing response",
@@ -121,19 +108,7 @@ export const adminSaveGuest = onCall(options, async (req) => {
 export const adminSaveEvent = onCall(options, async (req) => {
   admin(req);
   const e = checked(() => validateEvent(req.data?.event));
-  await db.runTransaction(async (tx) => {
-    const guests = await tx.get(db.collection("guests"));
-    if (
-      guests.docs.some((g) =>
-        (g.data().response?.meals || []).some((m) => !e.meals.includes(m)),
-      )
-    )
-      throw new HttpsError(
-        "failed-precondition",
-        "Meal already selected by a guest",
-      );
-    tx.set(db.doc("settings/event"), e);
-  });
+  await db.doc("settings/event").set(e, { merge: true });
   return { ok: true };
 });
 export const adminMarkSent = onCall(options, async (req) => {

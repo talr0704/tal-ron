@@ -19,16 +19,15 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
   await page.getByRole("radio", { name: "מגיעים!" }).check();
   await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("1");
   await page.getByLabel("מבוגרים (עד 2)").selectOption("2");
-  await page.getByLabel("ילדים מגיל 5 (עד 2)").selectOption("1");
-  await page.getByLabel("ילדים מתחת לגיל 5 (עד 1)").selectOption("1");
-  await expect(page.getByLabel(/מנה לאורח/)).toHaveCount(4);
-  await page.getByLabel("מנה לאורח 1", { exact: true }).selectOption("טבעונית");
+  await page.getByLabel("ילדים מגיל 5", { exact: true }).fill("25");
+  await page.getByLabel("ילדים מתחת לגיל 5", { exact: true }).fill("12");
+  await expect(page.getByLabel(/מנה לאורח/)).toHaveCount(0);
   await page.getByRole("button", { name: "שמירת אישור הגעה" }).click();
   await expect(page.getByRole("status")).toContainText("התשובה נשמרה");
   await expect(page.locator(".saved-confirmation-icon")).toBeVisible();
   await expect(page.locator(".saved-participants")).toContainText("2 מבוגרים");
   await expect(page.locator(".saved-participants")).toContainText(
-    "ילד אחד מתחת לגיל 5",
+    "12 ילדים מתחת לגיל 5",
   );
   await expect(page.locator(".bloom-frame")).toHaveCount(5);
   await page.reload();
@@ -38,17 +37,22 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
   await expect(page.locator(".saved-confirmation-icon")).toHaveCount(0);
   await page.getByRole("button", { name: "עדכון תשובה" }).click();
   await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("2");
-  await expect(page.getByLabel("מנה לאורח 1", { exact: true })).toHaveValue(
-    "טבעונית",
+  await expect(page.getByLabel("ילדים מגיל 5", { exact: true })).toHaveValue(
+    "25",
   );
+  await expect(
+    page.getByLabel("ילדים מתחת לגיל 5", { exact: true }),
+  ).toHaveValue("12");
   await page.goto("/admin");
   await expect(
     page.getByRole("heading", { name: "כל השמחה, במקום אחד." }),
   ).toBeVisible();
   await expect(page.locator(".stats")).toContainText(
-    "3 מבוגרים · 1 ילדים · 1 מתחת ל־5",
+    "3 מבוגרים · 25 ילדים · 12 מתחת ל־5",
   );
-  await expect(page.locator(".meal-summary")).toContainText("טבעונית: 1");
+  await expect(
+    page.getByText("מנות למאשרי הגעה", { exact: false }),
+  ).toHaveCount(0);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
@@ -192,13 +196,16 @@ test("event editing and CSV import update guest interface without rebuild", asyn
     name: "guests.csv",
     mimeType: "text/csv",
     buffer: Buffer.from(
-      "\uFEFFname,phone,side,maxAdults,maxChildren,maxUnder5\r\nאורחת חדשה,,ron,1,0,0\r\n",
+      "\uFEFFname,phone,side,maxAdults\r\nאורחת חדשה,,ron,1\r\n",
     ),
   });
   await expect(page.getByRole("status")).toContainText("הייבוא הושלם");
   await expect(
-    page.locator("tr").filter({ hasText: "אורחת חדשה" }),
-  ).toContainText("מבוגרים: 1");
+    page
+      .locator("tr")
+      .filter({ hasText: "אורחת חדשה" })
+      .getByRole("cell", { name: "1", exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "פרטי האירוע" }).click();
   await page.getByLabel("קבלת פנים", { exact: true }).fill("19:00");
   await page.getByRole("button", { name: "שמירת פרטי האירוע" }).click();
@@ -216,7 +223,7 @@ test("personal invitation fits at both widths and retains a keyboard draft after
   const radios = page.getByRole("radio");
   await expect(radios).toHaveCount(3);
   for (const width of [320, 1440]) {
-    await page.setViewportSize({ width, height: width === 320 ? 700 : 900 });
+    await page.setViewportSize({ width, height: width === 320 ? 844 : 1050 });
     for (const radio of await radios.all())
       await expect(radio).toBeInViewport();
     expect(
@@ -224,6 +231,8 @@ test("personal invitation fits at both widths and retains a keyboard draft after
     ).toBe(width);
   }
   await page.setViewportSize({ width: 320, height: 700 });
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "ניווט לדואה" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(radios.first()).toBeFocused();
   await expect(page.locator(".attendance-choice").first()).toHaveCSS(

@@ -1,5 +1,5 @@
 :root {
-  font-family: Heebo, Arial, sans-serif;
+  font-family: Rubik, Arial, sans-serif;
   color: #343c32;
   background: #f8f5ef;
   font-synthesis: none;
@@ -62,7 +62,7 @@ button:disabled {
 h1,
 h2,
 h3 {
-  font-family: "Noto Serif Hebrew", Georgia, serif;
+  font-family: Rubik, Arial, sans-serif;
   font-weight: 400;
 }
 h2 {
@@ -120,7 +120,6 @@ small,
   letter-spacing: -4px;
 }
 .script {
-  font-family: "Noto Serif Hebrew", serif;
   font-size: 23px;
   color: #8e967f;
   margin: 0 0 26px;
@@ -232,11 +231,6 @@ textarea {
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
 }
-.mealgrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0 18px;
-}
 footer {
   border-top: 1px solid var(--line);
   padding: 30px 6%;
@@ -307,10 +301,6 @@ footer a {
 }
 .stats .card:last-child {
   background: #e8eddf;
-}
-.meal-summary {
-  font-size: 13px;
-  margin: 22px 0;
 }
 .toolbar {
   display: flex;
@@ -490,9 +480,6 @@ td button {
   }
   .choices label {
     font-size: 13px;
-  }
-  .mealgrid {
-    grid-template-columns: 1fr;
   }
   .adminhead {
     gap: 12px;
