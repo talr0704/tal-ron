@@ -15,20 +15,6 @@ export function Art({ name, className, alt = "" }) {
   );
 }
 
-export function HeaderDoves() {
-  return (
-    <div className="greeting-doves" aria-hidden="true">
-      {["left", "right"].map((side) => (
-        <div key={side} className={`greeting-dove greeting-dove-${side}`}>
-          <Art name="dove-far-wing" className="greeting-dove-wing far-wing" />
-          <Art name="dove-body" className="greeting-dove-body" />
-          <Art name="dove-wing" className="greeting-dove-wing near-wing" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 export function Couple({ image }) {
   const custom =
     image && !["/couple.svg", "/images/couple.svg"].includes(image);
