@@ -107,87 +107,9 @@
   }
 }
 
-.guest-site .gouache-doves {
-  position: relative;
-  width: min(70%, 235px);
-  aspect-ratio: 3.5;
-  margin: 0 auto;
-  direction: ltr;
-}
-
-.guest-site .gouache-doves img,
-.guest-site .dove,
 .guest-site .gouache-couple img {
   position: absolute;
   display: block;
-}
-
-.guest-site .dove {
-  width: 30%;
-  height: 100%;
-  top: 0;
-}
-
-.guest-site .dove-left {
-  left: 0;
-}
-.guest-site .dove-right {
-  right: 0;
-  transform: scaleX(-1);
-}
-.guest-site .dove-body {
-  width: 100%;
-  top: 34%;
-}
-
-.guest-site .dove-wing,
-.guest-site .dove-far-wing {
-  width: 66%;
-  left: 12%;
-  top: -2%;
-  transform-origin: 80% 85%;
-  animation: gouache-wing 1.9s ease-in-out infinite alternate;
-}
-
-.guest-site .dove-far-wing {
-  top: -7%;
-  left: 25%;
-  transform-origin: 69% 91%;
-  animation-direction: alternate-reverse;
-}
-
-.guest-site .dove-right img {
-  animation-delay: -0.6s;
-}
-
-@keyframes gouache-wing {
-  from {
-    rotate: -7deg;
-  }
-  to {
-    rotate: 9deg;
-  }
-}
-
-.guest-site .ribbon-left,
-.guest-site .ribbon-right {
-  width: 24%;
-  top: 52%;
-  animation: gouache-ribbon 3.5s ease-in-out infinite alternate;
-}
-
-.guest-site .ribbon-left {
-  left: 28%;
-  transform-origin: 3% 28%;
-}
-.guest-site .ribbon-right {
-  right: 26%;
-  transform-origin: 92% 60%;
-}
-.guest-site .ribbon-heart {
-  width: 17%;
-  left: 41.5%;
-  top: 43%;
 }
 
 @keyframes gouache-ribbon {
@@ -584,12 +506,6 @@
   }
 }
 
-.guest-site .invitation-recipient {
-  margin: 0 0 7px;
-  font-size: 0.94rem;
-  overflow-wrap: anywhere;
-}
-
 .guest-site .tentative-details {
   text-align: start;
   margin-top: 14px;
@@ -603,4 +519,92 @@
 .guest-site .tentative-details summary:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
+}
+
+.guest-site .guest-name-frame {
+  display: grid;
+  place-items: center;
+  width: min(78%, 202px);
+  min-height: 126px;
+  margin: 0 auto 5px;
+  padding: 62px 24px 22px;
+  background: url("/images/gouache/guest-name-frame.webp") center / 100% 100%
+    no-repeat;
+  font-size: 0.95rem;
+  line-height: 1.16;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.guest-site
+  :is(
+    .wedding-venue,
+    .wedding-time,
+    .event-parking,
+    .saved-heading,
+    .saved-decline,
+    .saved-participants
+  ) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.guest-site .event-detail-icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.guest-site :is(.wedding-venue, .wedding-time) .event-detail-icon {
+  width: 17px;
+  height: 17px;
+}
+
+.guest-site .saved-participants .event-detail-icon {
+  width: 41px;
+  height: 41px;
+}
+
+.guest-site .saved-confirmation-icon {
+  width: 56px;
+  height: auto;
+  flex: none;
+}
+
+.guest-site .guest-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+.guest-site .event-chuppah {
+  width: min(45%, 160px);
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.guest-site .invitation-logistics {
+  margin-top: 12px;
+}
+
+.guest-site .invitation-logistics h2 {
+  margin: 3px 0 8px;
+  font-size: 1.35rem;
+}
+
+.guest-site .waze-action {
+  margin-top: 7px;
+  background: radial-gradient(ellipse at 40% 20%, #3b6329, #234922);
+  border-color: #1d421d;
+  color: var(--paper);
+}
+
+.guest-site .waze-action:hover {
+  background: #264a25;
 }

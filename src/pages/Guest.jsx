@@ -3,12 +3,12 @@ import { useParams, Link } from "react-router-dom";
 import { api, isDemo } from "../services/api";
 import { useEvent } from "../hooks/useEvent";
 import Field from "../components/Field";
-import { Art, Bloom, Couple, Doves, preloadBloom } from "../components/Gouache";
+import { Art, Bloom, Couple, preloadBloom } from "../components/Gouache";
 
 const choices = [
-  { value: "yes", label: "מגיעים!", icon: "flower" },
+  { value: "yes", label: "מגיעים!", icon: "tick" },
   { value: "maybe", label: "אולי", icon: "heart" },
-  { value: "no", label: "לא נוכל להגיע", icon: "tick" },
+  { value: "no", label: "לא נוכל להגיע", icon: "flower" },
 ];
 const emptyForm = {
   status: "",
@@ -18,6 +18,22 @@ const emptyForm = {
   meals: [],
   note: "",
 };
+
+const participantList = new Intl.ListFormat("he", { type: "conjunction" });
+
+function savedParticipants({ adults, children, under5 }) {
+  return participantList.format(
+    [
+      adults === 1 ? "מבוגר אחד" : adults > 0 ? `${adults} מבוגרים` : null,
+      children === 1 ? "ילד אחד" : children > 0 ? `${children} ילדים` : null,
+      under5 === 1
+        ? "ילד אחד מתחת לגיל 5"
+        : under5 > 0
+          ? `${under5} ילדים מתחת לגיל 5`
+          : null,
+    ].filter(Boolean),
+  );
+}
 
 export default function Guest() {
   const { token } = useParams();
@@ -139,6 +155,7 @@ function Invitation({ token }) {
   const venue = event.venue === "אולם דואאה (DUEE)" ? "דואה" : event.venue;
   const city = event.address.split(",").at(-1).trim();
   const savedChoice = choices.find(({ value }) => value === saved?.status);
+  const participants = savedChoice && savedParticipants(saved);
 
   return (
     <div className="guest-site" dir="rtl">
@@ -147,7 +164,9 @@ function Invitation({ token }) {
           <header className="invitation-hero">
             <Art name="cloud-left" className="hero-cloud hero-cloud-left" />
             <Art name="cloud-right" className="hero-cloud hero-cloud-right" />
-            <Doves />
+            <p className="guest-name-frame">
+              {inv?.name?.trim() || "נשמח לחגוג איתכם!"}
+            </p>
             <h1>
               החתונה של <strong>{event.names}</strong>
             </h1>
@@ -155,11 +174,17 @@ function Invitation({ token }) {
               {Number(day)}.{Number(month)}.{year.slice(-2)}
             </time>
             <p className="wedding-venue">
-              {venue}
-              {city !== venue && ` · ${city}`}
+              <Art name="event-pin" className="event-detail-icon" />
+              <span>
+                {venue}
+                {city !== venue && ` · ${city}`}
+              </span>
             </p>
             <p className="wedding-time">
-              קבלת פנים ב־<time dir="ltr">{event.time}</time>
+              <Art name="event-clock" className="event-detail-icon" />
+              <span>
+                קבלת פנים ב־<time dir="ltr">{event.time}</time>
+              </span>
             </p>
             <Couple image={event.image} />
           </header>
@@ -189,7 +214,7 @@ function Invitation({ token }) {
             ) : savedChoice ? (
               <div className="response-result">
                 {saved.status === "maybe" && (
-                  <Art name="resting-dove" className="resting-dove" />
+                  <Art name="response-maybe-dove" className="resting-dove" />
                 )}
                 {saved.status === "yes" &&
                   (celebrate ? (
@@ -197,26 +222,45 @@ function Invitation({ token }) {
                   ) : (
                     <Art name="bloom-5" className="saved-flower" />
                   ))}
-                {saved.status === "no" && <Doves />}
                 <div role="status">
-                  <h2 tabIndex={-1} ref={savedTitle}>
-                    התשובה נשמרה
+                  <h2 tabIndex={-1} ref={savedTitle} className="saved-heading">
+                    {celebrate && (
+                      <Art
+                        name="response-confirmed"
+                        className="saved-confirmation-icon"
+                      />
+                    )}
+                    {celebrate ? "התשובה נשמרה" : "התשובה הקודמת"}
                   </h2>
                   <p className={`saved-choice choice-${saved.status}`}>
                     {savedChoice.label}
                   </p>
-                  {saved.status === "maybe" && (
-                    <p>אפשר לעדכן את התשובה בהמשך דרך הקישור האישי.</p>
+                  {saved.status === "maybe" && <p>נשמח לעדכון כשתדעו</p>}
+                  {saved.status === "no" && (
+                    <p className="saved-decline">
+                      <Art
+                        name="response-petal"
+                        className="event-detail-icon"
+                      />
+                      תודה שעדכנתם
+                    </p>
                   )}
-                  {saved.status === "no" && <p>תודה שעדכנתם. נתגעגע אליכם!</p>}
-                  {saved.status === "yes" && (
-                    <p>
-                      מחכים לחגוג איתכם! מספר המשתתפים:{" "}
-                      {saved.adults + saved.children + saved.under5}
+                  {participants && (
+                    <p className="saved-participants">
+                      <Art
+                        name="response-participants"
+                        className="event-detail-icon"
+                      />
+                      <span>{participants}</span>
                     </p>
                   )}
                 </div>
-                <button type="button" className="guest-action" onClick={edit}>
+                <button
+                  type="button"
+                  className="guest-action guest-icon-action"
+                  onClick={edit}
+                >
+                  <Art name="response-edit" className="event-detail-icon" />
                   עדכון תשובה
                 </button>
               </div>
@@ -226,7 +270,6 @@ function Invitation({ token }) {
                   <legend className="guest-visually-hidden">
                     תשובת ההגעה שלכם
                   </legend>
-                  <p className="invitation-recipient">ההזמנה של {inv.name}</p>
                   <div className="attendance-choices" ref={choiceGroup}>
                     {choices.map(({ value, label, icon }) => (
                       <label
@@ -252,7 +295,10 @@ function Invitation({ token }) {
                     <div className="response-details">
                       {form.status === "maybe" && (
                         <>
-                          <Art name="resting-dove" className="resting-dove" />
+                          <Art
+                            name="response-maybe-dove"
+                            className="resting-dove"
+                          />
                           <h2>אולי</h2>
                           <p>נשמח לשמוע! אפשר לעדכן את התשובה בהמשך.</p>
                         </>
@@ -319,16 +365,29 @@ function Invitation({ token }) {
             )}
           </section>
         </div>
-        <aside className="invitation-logistics" aria-label="פרטי הגעה לאולם">
-          <p>
-            {event.address} · {event.parking}
+        <aside
+          className="invitation-logistics"
+          aria-labelledby="arrival-information"
+        >
+          <Art name="event-chuppah" className="event-chuppah" />
+          <h2 id="arrival-information">פרטי האירוע והגעה</h2>
+          <p>{event.address}</p>
+          <p className="event-parking">
+            <Art name="event-parking" className="event-detail-icon" />
+            <span>
+              {event.parking === "חניה מול האולם"
+                ? "החניה מול האולם"
+                : event.parking}
+            </span>
           </p>
           <a
+            className="guest-action guest-icon-action waze-action"
             target="_blank"
             rel="noreferrer"
             href={`https://waze.com/ul?q=${encodeURIComponent(event.address)}&navigate=yes`}
           >
-            ניווט ב־Waze
+            <Art name="event-waze" className="event-detail-icon" />
+            ניווט לדואה
           </a>
         </aside>
       </main>
