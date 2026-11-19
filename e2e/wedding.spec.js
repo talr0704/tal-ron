@@ -5,7 +5,7 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "החתונה של טל ורון", exact: true }),
   ).toBeVisible();
-  await expect(page.locator(".guest-name-frame")).toHaveText("נועה ישראלי");
+  await expect(page.locator(".rsvp-greeting")).toHaveText("היי, נועה ישראלי!");
   for (const [choice, icon] of [
     ["yes", "tick"],
     ["maybe", "heart"],
@@ -119,9 +119,7 @@ test("landing page is RTL and fits desktop/mobile", async ({
     page.getByText("פתחו את הקישור האישי", { exact: false }),
   ).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await expect(page.locator(".guest-name-frame")).toHaveText(
-    "נשמח לחגוג איתכם!",
-  );
+  await expect(page.locator(".rsvp-greeting")).toHaveText("אישור הגעה");
   const waze = page.getByRole("link", { name: "ניווט לדואה" });
   const wazeUrl = `https://waze.com/ul?q=${encodeURIComponent("המאה ועשרים 6, ראשון לציון")}&navigate=yes`;
   await expect(waze).toHaveAttribute("href", wazeUrl);
@@ -226,13 +224,27 @@ test("personal invitation fits at both widths and retains a keyboard draft after
     await page.setViewportSize({ width, height: width === 320 ? 844 : 1050 });
     for (const radio of await radios.all())
       await expect(radio).toBeInViewport();
+    const [yes, maybe, no] = await Promise.all(
+      (await radios.all()).map((r) => r.boundingBox()),
+    );
+    expect(yes.x).toBeGreaterThan(maybe.x);
+    expect(maybe.x).toBeGreaterThan(no.x);
+    expect(yes.y).toBe(maybe.y);
+    expect(maybe.y).toBe(no.y);
+    const greeting = await page.locator(".rsvp-greeting").boundingBox();
+    const portrait = await page.locator(".gouache-couple").boundingBox();
+    const details = await page
+      .getByRole("heading", { name: "פרטי האירוע" })
+      .boundingBox();
+    expect(greeting.y).toBeGreaterThanOrEqual(portrait.y + portrait.height);
+    expect(greeting.y + greeting.height).toBeLessThan(yes.y);
+    expect(details.y).toBeGreaterThan(yes.y + yes.height);
+
     expect(
       await page.evaluate(() => document.documentElement.scrollWidth),
     ).toBe(width);
   }
   await page.setViewportSize({ width: 320, height: 700 });
-  await page.keyboard.press("Tab");
-  await expect(page.getByRole("link", { name: "ניווט לדואה" })).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(radios.first()).toBeFocused();
   await expect(page.locator(".attendance-choice").first()).toHaveCSS(
