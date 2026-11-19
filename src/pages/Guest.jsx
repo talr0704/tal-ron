@@ -7,7 +7,7 @@ import {
   Art,
   Bloom,
   Couple,
-  Greeting,
+  HeaderDoves,
   preloadBloom,
 } from "../components/Gouache";
 
@@ -155,6 +155,7 @@ function Invitation({ token }) {
   const [year, month, day] = event.date.split("-");
   const venue = event.venue === "אולם דואאה (DUEE)" ? "דואה" : event.venue;
   const city = event.address.split(",").at(-1).trim();
+  const guestName = inv?.name?.trim();
   const savedChoice = choices.find(({ value }) => value === saved?.status);
   const participants = savedChoice && savedParticipants(saved);
 
@@ -164,65 +165,30 @@ function Invitation({ token }) {
         <header className="invitation-hero">
           <Art name="cloud-left" className="hero-cloud hero-cloud-left" />
           <Art name="cloud-right" className="hero-cloud hero-cloud-right" />
-          <Greeting name={inv?.name} />
+          <HeaderDoves />
           <h1>
             החתונה של <strong>{event.names}</strong>
           </h1>
           <time className="wedding-date" dateTime={event.date} dir="ltr">
             {Number(day)}.{Number(month)}.{year.slice(-2)}
           </time>
-          <p className="wedding-venue">
-            <Art name="event-pin" className="event-detail-icon" />
-            <span>
-              {venue}
-              {city !== venue && ` · ${city}`}
-            </span>
-          </p>
-          <p className="wedding-time">
-            <Art name="event-clock" className="event-detail-icon" />
-            <span>
-              קבלת פנים ב־<time dir="ltr">{event.time}</time>
-            </span>
-          </p>
-          <aside
-            className="invitation-logistics"
-            aria-labelledby="arrival-information"
-          >
-            <h2 id="arrival-information" className="guest-visually-hidden">
-              פרטי האירוע והגעה
-            </h2>
-            <div className="event-directions">
-              <Art name="event-chuppah" className="event-chuppah" />
-              <div>
-                <p>{event.address}</p>
-                <p className="event-parking">
-                  <Art name="event-parking" className="event-detail-icon" />
-                  <span>
-                    {event.parking === "חניה מול האולם"
-                      ? "החניה מול האולם"
-                      : event.parking}
-                  </span>
-                </p>
-              </div>
-            </div>
-            <a
-              className="guest-action guest-icon-action waze-action"
-              target="_blank"
-              rel="noreferrer"
-              href={`https://waze.com/ul?q=${encodeURIComponent(event.address)}&navigate=yes`}
-            >
-              <Art name="event-waze" className="event-detail-icon" />
-              ניווט לדואה
-            </a>
-          </aside>
           <Couple image={event.image} />
         </header>
 
         <section
           id="rsvp"
           className="invitation-response"
-          aria-label="אישור הגעה"
+          aria-labelledby="rsvp-heading"
         >
+          <h2 className="rsvp-greeting" id="rsvp-heading">
+            {guestName ? (
+              <>
+                היי, <bdi>{guestName}</bdi>!
+              </>
+            ) : (
+              "אישור הגעה"
+            )}
+          </h2>
           {!token ? (
             <>
               <p>לאישור הגעה, פתחו את הקישור האישי שקיבלתם.</p>
@@ -381,6 +347,42 @@ function Invitation({ token }) {
               שומרים את התשובה…
             </span>
           )}
+        </section>
+        <section
+          className="invitation-logistics"
+          aria-labelledby="arrival-information"
+        >
+          <h2 id="arrival-information">פרטי האירוע</h2>
+          <div className="ceremony-scene">
+            <div className="event-directions">
+              <p className="wedding-venue">
+                <Art name="event-pin" className="event-detail-icon" />
+                <span>
+                  {venue}
+                  {city && city !== venue && `, ${city}`}
+                </span>
+              </p>
+              <p className="wedding-time">
+                <Art name="event-clock" className="event-detail-icon" />
+                <span>
+                  קבלת פנים ב־<time dir="ltr">{event.time}</time>
+                </span>
+              </p>
+              <p className="event-parking">
+                <Art name="event-parking" className="event-detail-icon" />
+                <span>{event.parking}</span>
+              </p>
+              <a
+                className="guest-action guest-icon-action waze-action"
+                target="_blank"
+                rel="noreferrer"
+                href={`https://waze.com/ul?q=${encodeURIComponent(event.address)}&navigate=yes`}
+              >
+                <Art name="event-waze" className="event-detail-icon" />
+                ניווט לדואה
+              </a>
+            </div>
+          </div>
         </section>
       </main>
       <footer className="invitation-footer">

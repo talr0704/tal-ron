@@ -21,24 +21,26 @@
   position: relative;
   isolation: isolate;
   text-align: center;
-  padding: 14px 12px 0;
+  padding: 19px 0 0;
   overflow: hidden;
   background:
-    linear-gradient(0deg, var(--paper), transparent 14%),
-    url("/images/wedding-garden.webp") center 48% / cover no-repeat,
+    linear-gradient(0deg, var(--paper), transparent 17%),
+    radial-gradient(ellipse 300px 165px at 50% 0, #fff6e8 14%, transparent 97%),
+    url("/images/gouache/floral-meadow.webp") center 47% / cover no-repeat,
     #d5e49c;
 }
 
 .guest-site .invitation-hero h1 {
   position: relative;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 80%;
   font-size: 1.2rem;
   line-height: 1.18;
 }
 
 .guest-site .invitation-hero h1 strong {
   display: block;
-  font-size: clamp(2.25rem, 9vw, 3.1rem);
+  font-size: clamp(2.35rem, 10vw, 3.4rem);
   font-weight: 600;
 }
 
@@ -107,10 +109,10 @@
 
 .guest-site .gouache-couple {
   position: relative;
-  width: min(94%, 490px);
+  width: min(98%, 550px);
   aspect-ratio: 1.27;
   margin: 7px auto 0;
-  mask-image: linear-gradient(#000 94%, transparent);
+  mask-image: linear-gradient(#000 86%, transparent);
 }
 
 .guest-site .couple-portrait {
@@ -199,8 +201,15 @@
 .guest-site .invitation-response {
   max-width: 600px;
   margin-inline: auto;
-  padding: 14px clamp(15px, 5%, 28px) 35px;
+  padding: 6px clamp(10px, 3%, 22px) 22px;
   text-align: center;
+}
+
+.guest-site .rsvp-greeting {
+  margin: 0 0 12px;
+  font-size: clamp(1.3rem, 5vw, 1.65rem);
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .guest-site .rsvp-fields {
@@ -212,22 +221,25 @@
 
 .guest-site .attendance-choices {
   display: grid;
-  gap: 7px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr) minmax(0, 1.25fr);
+  gap: 6px;
 }
 
 .guest-site .attendance-choice {
   position: relative;
   display: grid;
-  grid-template-columns: 23px 1fr 23px;
+  grid-template-columns: auto minmax(0, max-content);
+  place-content: center;
   align-items: center;
-  gap: 8px;
-  min-height: 49px;
-  padding: 8px 20px;
+  gap: clamp(4px, 1vw, 8px);
+  min-height: 54px;
+  padding: 7px clamp(6px, 2vw, 16px);
   border: 1px solid var(--edge);
   border-radius: 999px;
   background: var(--fill);
   color: var(--ink);
-  font-size: 1.06rem;
+  font-size: clamp(0.82rem, 3.5vw, 1rem);
+  line-height: 1.15;
   font-weight: 500;
   cursor: pointer;
 }
@@ -279,8 +291,8 @@
 }
 
 .guest-site .choice-icon {
-  width: 21px;
-  max-height: 21px;
+  width: clamp(13px, 4vw, 19px);
+  max-height: 19px;
   object-fit: contain;
   transition: transform 150ms ease;
 }
@@ -288,6 +300,13 @@
 .guest-site .attendance-choice:active .choice-icon {
   transform: scale(0.83);
 }
+.guest-site .attendance-choice .selection-mark {
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-end: 8px;
+  font-size: 0.72rem;
+}
+
 .guest-site .attendance-choice:not(:has(:checked)) .selection-mark {
   visibility: hidden;
 }
@@ -481,23 +500,19 @@
   outline-offset: 4px;
 }
 
-.guest-site .gouache-greeting {
-  position: relative;
-  max-width: 900px;
-  margin-inline: auto;
-}
-
 .guest-site .greeting-doves {
   position: absolute;
   inset: 0;
+  max-width: 800px;
+  margin-inline: auto;
   direction: ltr;
   pointer-events: none;
 }
 
 .guest-site .greeting-dove {
   position: absolute;
-  top: 7px;
-  width: clamp(48px, 20%, 79px);
+  top: 9px;
+  width: clamp(40px, 13%, 74px);
   aspect-ratio: 1.2;
 }
 
@@ -542,22 +557,6 @@
   to {
     rotate: 9deg;
   }
-}
-
-.guest-site .guest-name-frame {
-  display: grid;
-  place-items: center;
-  width: min(78%, 202px);
-  min-height: 126px;
-  margin: 0 auto 5px;
-  padding: 62px 24px 22px;
-  background: url("/images/gouache/guest-name-frame.webp") center / 100% 100%
-    no-repeat;
-  font-size: 0.95rem;
-  line-height: 1.16;
-  font-weight: 500;
-  overflow-wrap: anywhere;
-  text-wrap: balance;
 }
 
 .guest-site
@@ -605,28 +604,43 @@
   gap: 9px;
 }
 
-.guest-site .event-directions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-}
-
-.guest-site .event-chuppah {
-  width: 46px;
-  flex: none;
-  height: auto;
-  display: block;
-}
-
 .guest-site .invitation-logistics {
-  margin: 7px auto 0;
-  padding: 0;
+  margin: 0 auto;
+  padding: 14px 0 0;
 }
 
-.guest-site .invitation-logistics p {
-  margin-bottom: 2px;
-  line-height: 1.32;
+.guest-site .invitation-logistics h2 {
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.guest-site .ceremony-scene {
+  width: min(100%, 660px);
+  margin-inline: auto;
+  padding: clamp(126px, 45vw, 275px) 14px 22px;
+  background:
+    linear-gradient(
+      var(--paper),
+      transparent 17%,
+      transparent 74%,
+      var(--paper)
+    ),
+    url("/images/gouache/garden-ceremony.webp") center 38% / cover no-repeat;
+}
+
+.guest-site .event-directions {
+  width: min(100%, 330px);
+  margin-inline: auto;
+  padding: 12px 14px;
+  border: 1px solid #dbd1ae;
+  border-radius: 18px;
+  background: var(--paper);
+}
+
+.guest-site .event-directions p {
+  margin: 3px 0;
+  line-height: 1.4;
 }
 
 .guest-site .event-parking .event-detail-icon {
