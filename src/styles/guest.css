@@ -58,6 +58,35 @@
   margin: 0 auto;
 }
 
+.guest-site .hero-cloud {
+  position: absolute;
+  z-index: -1;
+  width: clamp(84px, 25vw, 180px);
+  height: auto;
+  pointer-events: none;
+  animation: hero-cloud-drift 23s ease-in-out infinite alternate;
+}
+
+.guest-site .hero-cloud-left {
+  left: max(-24px, calc(50% - 450px));
+  top: 42%;
+  --cloud-travel: 25%;
+}
+
+.guest-site .hero-cloud-right {
+  right: max(-24px, calc(50% - 450px));
+  top: 51%;
+  --cloud-travel: -22%;
+  animation-duration: 29s;
+  animation-delay: -8s;
+}
+
+@keyframes hero-cloud-drift {
+  to {
+    transform: translate(var(--cloud-travel), -10%);
+  }
+}
+
 .guest-site .wedding-date {
   display: inline-block;
   margin-top: 0;
