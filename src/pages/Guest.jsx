@@ -158,6 +158,8 @@ function Invitation({ token }) {
     <div className="guest-site" dir="rtl">
       <main className="invitation-layout">
         <header className="invitation-hero">
+          <Art name="cloud-left" className="hero-cloud hero-cloud-left" />
+          <Art name="cloud-right" className="hero-cloud hero-cloud-right" />
           <Art name="hero-doves-ribbon" className="hero-doves-ribbon" />
           <h1>
             החתונה של <strong>{event.names}</strong>
