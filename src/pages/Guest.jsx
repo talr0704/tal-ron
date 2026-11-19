@@ -3,7 +3,13 @@ import { useParams, Link } from "react-router-dom";
 import { api, isDemo } from "../services/api";
 import { useEvent } from "../hooks/useEvent";
 import Field from "../components/Field";
-import { Art, Bloom, Couple, preloadBloom } from "../components/Gouache";
+import {
+  Art,
+  Bloom,
+  Couple,
+  Greeting,
+  preloadBloom,
+} from "../components/Gouache";
 
 const choices = [
   { value: "yes", label: "מגיעים!", icon: "tick" },
@@ -164,9 +170,7 @@ function Invitation({ token }) {
           <header className="invitation-hero">
             <Art name="cloud-left" className="hero-cloud hero-cloud-left" />
             <Art name="cloud-right" className="hero-cloud hero-cloud-right" />
-            <p className="guest-name-frame">
-              {inv?.name?.trim() || "נשמח לחגוג איתכם!"}
-            </p>
+            <Greeting name={inv?.name} />
             <h1>
               החתונה של <strong>{event.names}</strong>
             </h1>

@@ -521,6 +521,67 @@
   outline-offset: 4px;
 }
 
+.guest-site .gouache-greeting {
+  position: relative;
+}
+
+.guest-site .greeting-doves {
+  position: absolute;
+  inset: 0;
+  direction: ltr;
+  pointer-events: none;
+}
+
+.guest-site .greeting-dove {
+  position: absolute;
+  top: 7px;
+  width: clamp(48px, 20%, 79px);
+  aspect-ratio: 1.2;
+}
+
+.guest-site .greeting-dove-left {
+  left: 5%;
+}
+
+.guest-site .greeting-dove-right {
+  right: 5%;
+  transform: scaleX(-1);
+}
+
+.guest-site .greeting-dove img {
+  position: absolute;
+}
+
+.guest-site .greeting-dove-body {
+  width: 100%;
+  left: 0;
+  top: 32%;
+}
+
+.guest-site .greeting-dove-wing {
+  width: 66%;
+  left: 12%;
+  top: -2%;
+  transform-origin: 80% 85%;
+  animation: greeting-wing 1.9s ease-in-out infinite alternate;
+}
+
+.guest-site .greeting-dove-wing.far-wing {
+  left: 25%;
+  top: -7%;
+  transform-origin: 69% 91%;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes greeting-wing {
+  from {
+    rotate: -7deg;
+  }
+  to {
+    rotate: 9deg;
+  }
+}
+
 .guest-site .guest-name-frame {
   display: grid;
   place-items: center;
