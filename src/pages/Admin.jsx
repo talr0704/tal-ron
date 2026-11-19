@@ -12,8 +12,6 @@ const blank = {
   phone: "",
   side: "tal",
   maxAdults: 1,
-  maxChildren: 0,
-  maxUnder5: 0,
 };
 export default function Admin() {
   const [admin, setAdmin] = useState(null),
@@ -185,15 +183,6 @@ export default function Admin() {
               </small>
             </div>
           </section>
-          <p className="meal-summary">
-            מנות למאשרי הגעה:{" "}
-            {event.meals
-              .map(
-                (m) =>
-                  `${m}: ${yes.reduce((n, g) => n + g.response.meals.filter((x) => x === m).length, 0)}`,
-              )
-              .join("  ·  ")}
-          </p>
           {tab === "guests" && (
             <section className="card">
               <div className="toolbar">
@@ -235,9 +224,8 @@ export default function Admin() {
                 </label>
               </div>
               <p className="muted">
-                ייבוא מוסיף הזמנות. כותרות: name, phone, side, maxAdults,
-                maxChildren, maxUnder5. צד: tal / ron. ילדים מגיל 5 ומתחת ל־5
-                נספרים בנפרד.
+                ייבוא מוסיף הזמנות. כותרות: name, phone, side, maxAdults. צד:
+                tal / ron.
               </p>
               <div className="toolbar">
                 <input
@@ -276,7 +264,7 @@ export default function Admin() {
                         "שם",
                         "צד",
                         "תשובה",
-                        "מכסת ההזמנה",
+                        "מכסת מבוגרים",
                         "מגיעים",
                         "פעולות",
                       ].map((x) => (
@@ -299,13 +287,7 @@ export default function Admin() {
                             {statuses[g.response?.status || "pending"]}
                           </span>
                         </td>
-                        <td>
-                          <GuestCounts
-                            adults={g.maxAdults}
-                            children={g.maxChildren}
-                            under5={g.maxUnder5}
-                          />
-                        </td>
+                        <td>{g.maxAdults}</td>
                         <td>
                           {g.response ? (
                             <GuestCounts
@@ -518,19 +500,7 @@ export default function Admin() {
                     </Field>
                   ))}
                 </div>
-                <Field label="סוגי מנות (מופרדים בפסיק)">
-                  <input
-                    required
-                    value={event.meals.join(",")}
-                    onChange={(e) =>
-                      setEvent({ ...event, meals: e.target.value.split(",") })
-                    }
-                  />
-                </Field>
-                <p>
-                  אין להסיר סוג מנה שכבר נבחר בהזמנה. לשינוי האיור, החליפו את
-                  public/images/couple.svg או עדכנו את הנתיב.
-                </p>
+                <p>לשינוי האיור, עדכנו את הנתיב שלו בפרטי האירוע.</p>
                 <button disabled={busy} className="button">
                   שמירת פרטי האירוע
                 </button>
@@ -587,26 +557,18 @@ export default function Admin() {
                 <option value="ron">רון</option>
               </select>
             </Field>
-            <div className="grid3">
-              {[
-                ["maxAdults", "מכסת מבוגרים", 1],
-                ["maxChildren", "ילדים מגיל 5", 0],
-                ["maxUnder5", "מתחת לגיל 5", 0],
-              ].map(([k, l, min]) => (
-                <Field key={k} label={l}>
-                  <input
-                    type="number"
-                    min={min}
-                    max="20"
-                    required
-                    value={edit[k]}
-                    onChange={(e) =>
-                      setEdit({ ...edit, [k]: Number(e.target.value) })
-                    }
-                  />
-                </Field>
-              ))}
-            </div>
+            <Field label="מכסת מבוגרים">
+              <input
+                type="number"
+                min="1"
+                max="20"
+                required
+                value={edit.maxAdults}
+                onChange={(e) =>
+                  setEdit({ ...edit, maxAdults: Number(e.target.value) })
+                }
+              />
+            </Field>
             <p>בן/בת זוג נכללים במכסת המבוגרים. ברירת המחדל היא מבוגר אחד.</p>
             <button className="button" disabled={busy}>
               שמירה

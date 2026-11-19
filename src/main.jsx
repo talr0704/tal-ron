@@ -1,7 +1,11 @@
-import "@fontsource/heebo/hebrew-400.css";
-import "@fontsource/heebo/hebrew-500.css";
-import "@fontsource/heebo/latin-400.css";
-import "@fontsource/noto-serif-hebrew/hebrew-400.css";
+import "@fontsource/rubik/hebrew-400.css";
+import "@fontsource/rubik/hebrew-500.css";
+import "@fontsource/rubik/hebrew-600.css";
+import "@fontsource/rubik/hebrew-700.css";
+import "@fontsource/rubik/latin-400.css";
+import "@fontsource/rubik/latin-500.css";
+import "@fontsource/rubik/latin-600.css";
+import "@fontsource/rubik/latin-700.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";

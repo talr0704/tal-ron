@@ -11,8 +11,7 @@ const initial = () => ({
       phone: "0501234567",
       side: "tal",
       maxAdults: 2,
-      maxChildren: 2,
-      maxUnder5: 1,
+
       response: null,
       sent: [],
     },
@@ -23,14 +22,13 @@ const initial = () => ({
       phone: "",
       side: "ron",
       maxAdults: 1,
-      maxChildren: 0,
-      maxUnder5: 0,
+
       response: {
         status: "yes",
         adults: 1,
         children: 0,
         under5: 0,
-        meals: ["רגילה"],
+
         note: "",
       },
       sent: [],
@@ -57,7 +55,7 @@ export const demo = {
     const db = read(),
       g = db.guests.find((g) => g.token === t);
     if (!g) throw Error("הקישור אינו תקין");
-    g.response = validateResponse(data, g, db.event);
+    g.response = validateResponse(data, g);
     write(db);
   },
   list: async () => read().guests,
@@ -66,12 +64,7 @@ export const demo = {
     const db = read();
     const i = db.guests.findIndex((x) => x.id === g.id);
     const old = i >= 0 ? db.guests[i] : null;
-    if (
-      old?.response &&
-      (old.response.adults > valid.maxAdults ||
-        old.response.children > valid.maxChildren ||
-        old.response.under5 > valid.maxUnder5)
-    )
+    if (old?.response && old.response.adults > valid.maxAdults)
       throw Error("המכסה נמוכה מהתשובה שכבר ניתנה");
     const next = {
       ...old,
@@ -86,14 +79,7 @@ export const demo = {
   },
   saveEvent: async (event) => {
     const db = read();
-    validateEvent(event);
-    if (
-      db.guests.some((g) =>
-        (g.response?.meals || []).some((m) => !event.meals.includes(m)),
-      )
-    )
-      throw Error("אין להסיר מנה שכבר נבחרה");
-    db.event = event;
+    db.event = { ...db.event, ...validateEvent(event) };
     write(db);
   },
   markSent: async (id, type) => {

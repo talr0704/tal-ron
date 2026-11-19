@@ -7,7 +7,8 @@ test("CSV imports Hebrew quoted fields, phones, BOM and Windows newlines", () =>
   );
   assert.equal(g.name, "ישראלי, נועה");
   assert.equal(g.phone, "0501234567");
-  assert.equal(g.maxChildren, 2);
+  assert.equal(g.maxAdults, 1);
+  assert.equal(g.maxChildren, undefined);
 });
 test("CSV rejects missing headers and invalid adult quotas before writing", () => {
   assert.throws(() => parseGuests("name\nאורח"));
@@ -32,5 +33,7 @@ test("CSV export has Excel BOM, neutralizes formulas and excludes tokens", () =>
   assert.ok(text.startsWith("\uFEFF"));
   assert.ok(text.includes("'=HYPERLINK"));
   assert.ok(!text.includes("secret"));
+  assert.ok(!text.includes("maxChildren"));
+  assert.ok(!text.includes("meals"));
   assert.ok(text.includes("\r\n"));
 });
