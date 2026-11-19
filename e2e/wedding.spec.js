@@ -5,6 +5,17 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "החתונה של טל ורון", exact: true }),
   ).toBeVisible();
+  await expect(page.locator(".guest-name-frame")).toHaveText("נועה ישראלי");
+  for (const [choice, icon] of [
+    ["yes", "tick"],
+    ["maybe", "heart"],
+    ["no", "flower"],
+  ]) {
+    await expect(
+      page.locator(`.attendance-choice.choice-${choice} img`),
+    ).toHaveAttribute("src", `/images/gouache/icon-${icon}.webp`);
+  }
+  await expect(page.locator(".saved-confirmation-icon")).toHaveCount(0);
   await page.getByRole("radio", { name: "מגיעים!" }).check();
   await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("1");
   await page.getByLabel("מבוגרים (עד 2)").selectOption("2");
@@ -14,10 +25,17 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
   await page.getByLabel("מנה לאורח 1", { exact: true }).selectOption("טבעונית");
   await page.getByRole("button", { name: "שמירת אישור הגעה" }).click();
   await expect(page.getByRole("status")).toContainText("התשובה נשמרה");
+  await expect(page.locator(".saved-confirmation-icon")).toBeVisible();
+  await expect(page.locator(".saved-participants")).toContainText("2 מבוגרים");
+  await expect(page.locator(".saved-participants")).toContainText(
+    "ילד אחד מתחת לגיל 5",
+  );
   await expect(page.locator(".bloom-frame")).toHaveCount(5);
   await page.reload();
   await expect(page.getByRole("status")).toContainText("מגיעים!");
   await expect(page.locator(".bloom-frame")).toHaveCount(0);
+  await expect(page.locator(".saved-flower")).toBeVisible();
+  await expect(page.locator(".saved-confirmation-icon")).toHaveCount(0);
   await page.getByRole("button", { name: "עדכון תשובה" }).click();
   await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("2");
   await expect(page.getByLabel("מנה לאורח 1", { exact: true })).toHaveValue(
@@ -88,15 +106,29 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
     page.locator(".recipient").filter({ hasText: "בדיקת אורח" }),
   ).toContainText("אישורי שליחה: 1");
 });
-test("landing page is RTL and fits desktop/mobile", async ({ page }) => {
+test("landing page is RTL and fits desktop/mobile", async ({
+  page,
+  context,
+}) => {
   await page.goto("/");
   await expect(
     page.getByText("פתחו את הקישור האישי", { exact: false }),
   ).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await expect(
-    page.getByRole("link", { name: "ניווט ב־Waze" }),
-  ).toHaveAttribute("href", /^https:\/\/waze.com/);
+  await expect(page.locator(".guest-name-frame")).toHaveText(
+    "נשמח לחגוג איתכם!",
+  );
+  const waze = page.getByRole("link", { name: "ניווט לדואה" });
+  const wazeUrl = `https://waze.com/ul?q=${encodeURIComponent("המאה ועשרים 6, ראשון לציון")}&navigate=yes`;
+  await expect(waze).toHaveAttribute("href", wazeUrl);
+  await context.route(wazeUrl, (route) =>
+    route.fulfill({ body: "Waze link test" }),
+  );
+  const opened = context.waitForEvent("page");
+  await waze.click();
+  const destination = await opened;
+  await expect(destination).toHaveURL(wazeUrl);
+  await destination.close();
   await page.screenshot({
     path: "/tmp/tal-ron-guest-desktop.png",
     fullPage: true,
@@ -125,12 +157,19 @@ test("guest can answer maybe, decline and receives invalid-link feedback", async
   );
   await page.getByRole("button", { name: "שמירת אישור הגעה" }).click();
   await expect(page.getByRole("status")).toContainText("התשובה נשמרה");
+  await expect(page.getByText("נשמח לעדכון כשתדעו")).toBeVisible();
+  await expect(page.locator(".resting-dove")).toBeVisible();
   await page.getByRole("button", { name: "עדכון תשובה" }).click();
   await page.getByRole("radio", { name: "לא נוכל להגיע", exact: true }).check();
   await expect(page.getByLabel(/מנה לאורח/)).toHaveCount(0);
   await page.getByRole("button", { name: "שמירת אישור הגעה" }).click();
   await page.reload();
   await expect(page.getByRole("status")).toContainText("לא נוכל להגיע");
+  await expect(page.locator(".saved-decline img")).toHaveAttribute(
+    "src",
+    "/images/gouache/response-petal.webp",
+  );
+  await expect(page.locator(".saved-participants")).toHaveCount(0);
   await page.getByRole("button", { name: "עדכון תשובה" }).click();
   await page.getByRole("radio", { name: "מגיעים!" }).check();
   await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("1");
