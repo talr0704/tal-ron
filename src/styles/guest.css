@@ -207,10 +207,55 @@
   mask-image: linear-gradient(#000 94%, transparent);
 }
 
-.guest-site .couple-base {
+.guest-site .couple-portrait {
+  position: absolute;
   width: 91%;
   left: 0;
   bottom: -1.5%;
+}
+
+.guest-site .couple-portrait .couple-base {
+  position: relative;
+  width: 100%;
+}
+
+/* Both eyelid frames share the same crop in the original portrait coordinates. */
+.guest-site .couple-eyes {
+  left: 35.5556%;
+  top: 17.6991%;
+  width: 35.5556%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.guest-site .couple-eyes-open {
+  animation: gouache-eyes-open 5s step-end infinite;
+}
+
+.guest-site .couple-eyes-half {
+  animation: gouache-eyes-half 5s step-end infinite;
+}
+
+@keyframes gouache-eyes-open {
+  0%,
+  96.5% {
+    opacity: 1;
+  }
+  91% {
+    opacity: 0;
+  }
+}
+
+@keyframes gouache-eyes-half {
+  0%,
+  92.5%,
+  96.5% {
+    opacity: 0;
+  }
+  91%,
+  95% {
+    opacity: 1;
+  }
 }
 
 .guest-site .couple-veil {
