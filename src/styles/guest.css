@@ -61,27 +61,32 @@
 .guest-site .hero-cloud {
   position: absolute;
   z-index: -1;
-  width: clamp(84px, 25vw, 180px);
+  width: clamp(96px, 29vw, 220px);
   height: auto;
   pointer-events: none;
   animation: hero-cloud-drift 23s ease-in-out infinite alternate;
 }
 
 .guest-site .hero-cloud-left {
-  left: max(-24px, calc(50% - 450px));
-  top: 42%;
-  --cloud-travel: 25%;
+  left: max(-10px, calc(50% - 485px));
+  top: 38%;
+  --cloud-travel: 18%;
 }
 
 .guest-site .hero-cloud-right {
-  right: max(-24px, calc(50% - 450px));
-  top: 51%;
-  --cloud-travel: -22%;
+  right: max(-10px, calc(50% - 485px));
+  top: 48%;
+  width: clamp(91px, 27vw, 199px);
+  --cloud-travel: -18%;
   animation-duration: 29s;
   animation-delay: -8s;
 }
 
 @keyframes hero-cloud-drift {
+  from {
+    transform: translateX(calc(-1 * var(--cloud-travel)));
+  }
+
   to {
     transform: translate(var(--cloud-travel), -10%);
   }
