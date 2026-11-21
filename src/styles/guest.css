@@ -24,10 +24,12 @@
   position: relative;
   isolation: isolate;
   text-align: center;
-  padding: 4px 0 0;
+  padding: 3px 0 0;
   overflow: hidden;
+  mask-image: linear-gradient(#000 95%, transparent);
   background:
     linear-gradient(0deg, var(--paper), transparent 12%),
+    linear-gradient(#84dba94a, #6ed5a64a),
     url("/images/gouache/floral-meadow.webp") center 47% / cover no-repeat,
     #d5e49c;
 }
@@ -35,51 +37,65 @@
 .guest-site .invitation-hero h1 {
   position: relative;
   margin: 0 auto;
+  z-index: 3;
   max-width: 80%;
-  font-size: clamp(1.45rem, 6.8vw, 2.9rem);
-  font-weight: 500;
-  line-height: 1.1;
-  transform: skewX(-8deg);
+  font:
+    400 clamp(1.55rem, 5.5vw, 2.35rem) / 1 "Solitreo",
+    Rubik,
+    sans-serif;
 }
 
 .guest-site .invitation-hero h1 strong {
   display: block;
-  margin-top: 2px;
+  margin-top: 6px;
   color: #fffef7;
-  font-size: clamp(3.65rem, 15vw, 6.5rem);
-  font-weight: 700;
+  font-size: clamp(3.55rem, 12vw, 5.25rem);
+  font-weight: 400;
   text-shadow: 0 2px 7px #29461065;
 }
 
 .guest-site .hero-doves-ribbon {
+  position: relative;
+  z-index: 3;
   display: block;
-  width: min(80%, 490px);
+  width: min(76%, 335px);
   height: auto;
   margin: 0 auto;
 }
 
 .guest-site .hero-cloud {
   position: absolute;
-  z-index: -1;
-  width: clamp(96px, 29vw, 220px);
+  z-index: 2;
+  width: clamp(156px, 39vw, 460px);
   height: auto;
   pointer-events: none;
   animation: hero-cloud-drift 23s ease-in-out infinite alternate;
 }
 
 .guest-site .hero-cloud-left {
-  left: max(-10px, calc(50% - 485px));
-  top: 38%;
-  --cloud-travel: 18%;
+  left: max(6px, calc(50% - 625px));
+  bottom: -3%;
+  --cloud-travel: 7%;
 }
 
 .guest-site .hero-cloud-right {
-  right: max(-10px, calc(50% - 485px));
-  top: 48%;
-  width: clamp(91px, 27vw, 199px);
-  --cloud-travel: -18%;
+  right: max(-40px, calc(50% - 675px));
+  top: 5%;
+  --cloud-travel: -8%;
   animation-duration: 29s;
   animation-delay: -8s;
+}
+
+@media (max-width: 600px) {
+  .guest-site .hero-cloud-left {
+    left: -17%;
+    bottom: -2%;
+  }
+
+  .guest-site .hero-cloud-right {
+    right: -23%;
+    top: 14%;
+  }
 }
 
 @keyframes hero-cloud-drift {
@@ -88,17 +104,19 @@
   }
 
   to {
-    transform: translate(var(--cloud-travel), -10%);
+    transform: translate(var(--cloud-travel), -6%);
   }
 }
 
 .guest-site .wedding-date {
+  position: relative;
+  z-index: 3;
   display: inline-block;
   margin-top: 0;
-  font-size: clamp(1.35rem, 6vw, 2.6rem);
-  font-weight: 600;
-  line-height: 1.05;
-  transform: skewX(-8deg);
+  font:
+    400 clamp(1.35rem, 5vw, 2rem) / 1 "Solitreo",
+    Rubik,
+    sans-serif;
 }
 
 .guest-site .wedding-venue,
@@ -129,10 +147,16 @@
 
 .guest-site .gouache-couple {
   position: relative;
-  width: min(100%, 670px);
+  width: min(100%, 465px);
   aspect-ratio: 1.27;
   margin: 4px auto 0;
   mask-image: linear-gradient(#000 90%, transparent);
+}
+
+@media (min-width: 700px) {
+  .guest-site .gouache-couple {
+    left: 27px;
+  }
 }
 
 .guest-site .couple-portrait {
@@ -187,9 +211,9 @@
 }
 
 .guest-site .couple-veil {
-  width: 48%;
-  left: 50%;
-  top: 30%;
+  width: 62%;
+  left: 36%;
+  top: 13%;
   transform-origin: 4% 16%;
   animation: gouache-veil 5s ease-in-out infinite alternate;
 }
