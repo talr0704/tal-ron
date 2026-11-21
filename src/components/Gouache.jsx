@@ -25,22 +25,24 @@ export function Couple({ image }) {
       ) : (
         <>
           <Art name="veil" className="couple-veil" />
-          <div className="couple-portrait">
-            <Art
-              name="couple"
-              className="couple-base"
-              alt="טל ורון שוכבים שלובי זרועות על הדשא"
-            />
-            <Art
-              name="couple-eyes-open"
-              className="couple-eyes couple-eyes-open"
-            />
-            <Art
-              name="couple-eyes-half"
-              className="couple-eyes couple-eyes-half"
-            />
+          <div className="couple-foreground">
+            <div className="couple-portrait">
+              <Art
+                name="couple"
+                className="couple-base"
+                alt="טל ורון שוכבים שלובי זרועות על הדשא"
+              />
+              <Art
+                name="couple-eyes-open"
+                className="couple-eyes couple-eyes-open"
+              />
+              <Art
+                name="couple-eyes-half"
+                className="couple-eyes couple-eyes-half"
+              />
+            </div>
+            <Art name="bouquet-ribbon" className="bouquet-ribbon" />
           </div>
-          <Art name="bouquet-ribbon" className="bouquet-ribbon" />
         </>
       )}
     </div>

@@ -158,13 +158,22 @@
   width: min(100%, 465px);
   aspect-ratio: 1.27;
   margin: 4px auto 0;
-  mask-image: linear-gradient(#000 90%, transparent);
 }
 
 @media (min-width: 700px) {
   .guest-site .gouache-couple {
     left: 27px;
   }
+}
+
+.guest-site .couple-foreground {
+  position: absolute;
+  inset: 0;
+}
+
+/* The veil sits outside the fade so its moving edge is never masked. */
+.guest-site :is(.couple-foreground, .custom-couple) {
+  mask-image: linear-gradient(#000 90%, transparent);
 }
 
 .guest-site .couple-portrait {
@@ -219,7 +228,7 @@
 }
 
 .guest-site .couple-veil {
-  width: 62%;
+  width: 60%;
   left: 36%;
   top: 13%;
   transform-origin: 4% 16%;
