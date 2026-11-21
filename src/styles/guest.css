@@ -228,9 +228,9 @@
 }
 
 .guest-site .couple-veil {
-  width: 60%;
-  left: 36%;
-  top: 13%;
+  width: 47%;
+  left: 49%;
+  top: 20%;
   transform-origin: 4% 16%;
   animation: gouache-veil 5s ease-in-out infinite alternate;
 }
