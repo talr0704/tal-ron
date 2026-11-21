@@ -38,8 +38,7 @@
   mask-image: linear-gradient(#000 95%, transparent);
   background:
     linear-gradient(0deg, var(--paper), transparent 12%),
-    linear-gradient(#84dba94a, #6ed5a64a),
-    url("/images/gouache/floral-meadow.webp") center 47% / cover no-repeat,
+    url("/images/gouache/spring-meadow.webp") center 47% / cover no-repeat,
     #d5e49c;
 }
 
