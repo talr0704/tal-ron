@@ -1,5 +1,3 @@
-import "@fontsource/solitreo/hebrew-400.css";
-import "@fontsource/solitreo/latin-400.css";
 import "@fontsource/rubik/hebrew-400.css";
 import "@fontsource/rubik/hebrew-500.css";
 import "@fontsource/rubik/hebrew-600.css";
