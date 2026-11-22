@@ -1,4 +1,8 @@
-export { defaultEvent, validateResponse } from "../../functions/model.js";
+export {
+  canMessageGuest,
+  defaultEvent,
+  validateResponse,
+} from "../../functions/model.js";
 export const statuses = {
   yes: "מגיע/ה",
   no: "לא מגיע/ה",

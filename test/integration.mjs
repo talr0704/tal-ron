@@ -98,11 +98,27 @@ test("secure invitation lifecycle, admin checks and Firestore deny rules", async
       .status,
     400,
   );
+  const sentMessage = (type) =>
+    call("adminMarkSent", { id: g.id, type }, token);
+  assert.equal((await sentMessage("initial")).status, 400);
   assert.equal(
-    (await call("adminMarkSent", { id: g.id, type: "initial" }, token)).status,
+    (
+      await call("respond", {
+        token: g.token,
+        response: { ...response, status: "maybe" },
+      })
+    ).status,
     200,
   );
-  assert.equal((await call("adminList", {}, token)).result[0].sent.length, 1);
+  assert.equal((await sentMessage("pending")).status, 400);
+  assert.equal((await sentMessage("maybe")).status, 200);
+  assert.equal((await sentMessage("initial")).status, 200);
+  assert.deepEqual(
+    (await call("adminList", {}, token)).result[0].sent.map(
+      (message) => message.type,
+    ),
+    ["maybe", "initial"],
+  );
   const url =
     "http://127.0.0.1:8080/v1/projects/demo-tal-ron/databases/(default)/documents/guests";
   assert.equal((await fetch(url)).status, 403);

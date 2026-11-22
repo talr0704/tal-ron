@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, isDemo, login, logout, watchAdmin } from "../services/api";
-import { statuses, messageFor } from "../services/model";
+import { canMessageGuest, statuses, messageFor } from "../services/model";
 import { parseGuests, exportGuests } from "../services/csv";
 import Field from "../components/Field";
 import Arrow from "../components/Arrow";
@@ -13,6 +13,41 @@ const blank = {
   side: "tal",
   maxAdults: 1,
 };
+const messageLabels = {
+  initial: "הזמנה ראשונית",
+  pending: "תזכורת לטרם השיבו",
+  maybe: "תזכורת למסמני אולי",
+};
+
+function MessageHistory({ sent = [] }) {
+  const counts = Object.fromEntries(
+    Object.keys(messageLabels).map((type) => [
+      type,
+      sent.filter((entry) => entry.type === type).length,
+    ]),
+  );
+  const reminders = counts.pending + counts.maybe;
+  const unknown = sent.length - counts.initial - reminders;
+
+  return (
+    <>
+      <strong>הודעות שסומנו כנשלחות: {sent.length}</strong>
+      <small className="block">
+        {reminders ? `תזכורות שנשלחו: ${reminders}` : "לא נשלחה תזכורת"}
+      </small>
+      {Object.entries(messageLabels).map(
+        ([type, label]) =>
+          counts[type] > 0 && (
+            <small key={type} className="block">
+              {label}: {counts[type]}
+            </small>
+          ),
+      )}
+      {unknown > 0 && <small className="block">סוג לא רשום: {unknown}</small>}
+    </>
+  );
+}
+
 export default function Admin() {
   const [admin, setAdmin] = useState(null),
     [email, setEmail] = useState(""),
@@ -101,6 +136,13 @@ export default function Admin() {
       (filter === "all" || (g.response?.status || "pending") === filter) &&
       (side === "all" || g.side === side),
   );
+  const recipients = guests.filter((guest) => canMessageGuest(guest, type));
+  const selectedRecipients = recipients.filter((guest) =>
+    selected.includes(guest.id),
+  );
+  const previewGuest = selectedRecipients.find(
+    (guest) => guest.id === preview?.id,
+  );
   const yes = guests.filter((g) => g.response?.status === "yes");
   const sum = (k) => yes.reduce((n, g) => n + (g.response[k] || 0), 0);
   const counts = Object.fromEntries(
@@ -127,6 +169,31 @@ export default function Admin() {
       setSelected((current) => current.filter((id) => id !== guest.id));
       setPreview((current) => (current?.id === guest.id ? null : current));
     }, "המוזמן נמחק");
+  }
+  async function openMessage(event, id, messageType) {
+    event.preventDefault();
+    const url = event.currentTarget.href;
+    const target = window.open("", "_blank");
+    if (!target) {
+      setError("הדפדפן חסם את פתיחת WhatsApp.");
+      return;
+    }
+    target.opener = null;
+    setError("");
+    try {
+      const latest = await api.list();
+      setGuests(latest);
+      const guest = latest.find((entry) => entry.id === id);
+      if (!guest || !canMessageGuest(guest, messageType)) {
+        target.close();
+        setError("המוזמן כבר אינו מתאים לשליחת הודעה מסוג זה.");
+        return;
+      }
+      target.location.replace(url);
+    } catch {
+      target.close();
+      setError("לא ניתן לבדוק את סטטוס המוזמן. נסו שוב.");
+    }
   }
   function download() {
     const url = URL.createObjectURL(
@@ -163,7 +230,11 @@ export default function Admin() {
             key={id}
             aria-current={tab === id ? "page" : undefined}
             className={tab === id ? "active" : ""}
-            onClick={() => setTab(id)}
+            onClick={() => {
+              setTab(id);
+              if (id === "messages")
+                reload().catch(() => setError("טעינת הנתונים נכשלה"));
+            }}
           >
             {label}
           </button>
@@ -282,6 +353,7 @@ export default function Admin() {
                         "תשובה",
                         "מכסת מבוגרים",
                         "מגיעים",
+                        "הודעות ותזכורות",
                         "פעולות",
                       ].map((x) => (
                         <th key={x}>{x}</th>
@@ -317,6 +389,9 @@ export default function Admin() {
                           {g.response?.note && (
                             <small className="block">{g.response.note}</small>
                           )}
+                        </td>
+                        <td>
+                          <MessageHistory sent={g.sent} />
                         </td>
                         <td>
                           <button onClick={() => setEdit({ ...g })}>
@@ -355,7 +430,8 @@ export default function Admin() {
               <h2>קצת אהבה, ישר לוואטסאפ</h2>
               <p>
                 פתיחת הודעה מוכנה בלבד. אישורי הגעה באתר, וסימון שליחה רק לאחר
-                אישור שלכם.
+                אישור שלכם. רק מי שטרם השיבו או סימנו ״אולי״ יופיעו ברשימת
+                הנמענים.
               </p>
               <div className="grid3">
                 <Field label="תבנית">
@@ -367,9 +443,11 @@ export default function Admin() {
                       setPreview(null);
                     }}
                   >
-                    <option value="initial">הזמנה ראשונית</option>
-                    <option value="pending">תזכורת לטרם השיבו</option>
-                    <option value="maybe">תזכורת למסמני אולי</option>
+                    {Object.entries(messageLabels).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
                   </select>
                 </Field>
                 <Field label="סגנון">
@@ -395,62 +473,57 @@ export default function Admin() {
                 }}
               />
               <h3>בחירת מוזמנים להכנת הודעה אישית</h3>
-              {guests
-                .filter(
-                  (g) =>
-                    type === "initial" ||
-                    (g.response?.status || "pending") === type,
-                )
-                .map((g) => (
-                  <label className="recipient" key={g.id}>
-                    <input
-                      type="checkbox"
-                      checked={selected.includes(g.id)}
-                      onChange={(e) => {
-                        setSelected(
-                          e.target.checked
-                            ? [...selected, g.id]
-                            : selected.filter((id) => id !== g.id),
-                        );
-                        setPreview(null);
-                      }}
-                    />
-                    {g.name}
-                    <small>אישורי שליחה: {g.sent?.length || 0}</small>
-                  </label>
-                ))}
+              {!recipients.length && <p>אין מוזמנים מתאימים לתבנית הזו.</p>}
+              {recipients.map((g) => (
+                <label className="recipient" key={g.id}>
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(g.id)}
+                    onChange={(e) => {
+                      setSelected(
+                        e.target.checked
+                          ? [...selected, g.id]
+                          : selected.filter((id) => id !== g.id),
+                      );
+                      setPreview(null);
+                    }}
+                  />
+                  {g.name}
+                  <small>אישורי שליחה: {g.sent?.length || 0}</small>
+                </label>
+              ))}
               <button
-                disabled={!selected.length}
+                disabled={!selectedRecipients.length}
                 onClick={() => {
-                  const g = guests.find((g) => g.id === selected[0]);
+                  const [g] = selectedRecipients;
                   setPreview({
                     id: g.id,
                     text: messageFor(g, event, type, style, link(g)),
                   });
                 }}
               >
-                תצוגה מקדימה ועריכה ({selected.length})
+                תצוגה מקדימה ועריכה ({selectedRecipients.length})
               </button>
-              {preview && (
+              {previewGuest && (
                 <div className="preview">
                   <Field label="נמען">
                     <select
                       value={preview.id}
                       onChange={(e) => {
-                        const g = guests.find((g) => g.id === e.target.value);
+                        const g = selectedRecipients.find(
+                          (g) => g.id === e.target.value,
+                        );
                         setPreview({
                           id: g.id,
                           text: messageFor(g, event, type, style, link(g)),
                         });
                       }}
                     >
-                      {guests
-                        .filter((g) => selected.includes(g.id))
-                        .map((g) => (
-                          <option key={g.id} value={g.id}>
-                            {g.name}
-                          </option>
-                        ))}
+                      {selectedRecipients.map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.name}
+                        </option>
+                      ))}
                     </select>
                   </Field>
                   <Field label="תוכן ההודעה">
@@ -463,8 +536,7 @@ export default function Admin() {
                     />
                   </Field>
                   {(() => {
-                    const g = guests.find((g) => g.id === preview.id);
-                    let phone = g.phone.replace(/\D/g, "");
+                    let phone = previewGuest.phone.replace(/\D/g, "");
                     if (phone.startsWith("0")) phone = "972" + phone.slice(1);
                     return phone.length >= 9 && phone.length <= 15 ? (
                       <a
@@ -472,6 +544,7 @@ export default function Admin() {
                         href={`https://wa.me/${phone}?text=${encodeURIComponent(preview.text)}`}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={(e) => openMessage(e, previewGuest.id, type)}
                       >
                         פתיחת WhatsApp <Arrow />
                       </a>
