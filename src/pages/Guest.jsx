@@ -3,7 +3,6 @@ import { useParams, Link } from "react-router-dom";
 import { api, isDemo } from "../services/api";
 import { useEvent } from "../hooks/useEvent";
 import Field from "../components/Field";
-import Botanical from "../components/Botanical";
 import { Art, Bloom, Couple, preloadBloom } from "../components/Gouache";
 
 const choices = [
@@ -152,7 +151,7 @@ function Invitation({ token }) {
   const city = event.address.split(",").at(-1).trim();
   const guestName = inv?.name?.trim();
   const savedChoice = choices.find(({ value }) => value === saved?.status);
-  const participants = savedChoice && savedParticipants(saved);
+  const participants = saved?.status === "yes" && savedParticipants(saved);
 
   return (
     <div className="guest-site" dir="rtl">
@@ -205,7 +204,7 @@ function Invitation({ token }) {
               <p role="status">טוענים את ההזמנה…</p>
             )
           ) : savedChoice ? (
-            <div className="response-result">
+            <div className={`response-result response-result-${saved.status}`}>
               {saved.status === "maybe" && (
                 <Art name="response-maybe-dove" className="resting-dove" />
               )}
@@ -217,24 +216,11 @@ function Invitation({ token }) {
                 ))}
               <div role="status">
                 <h2 tabIndex={-1} ref={savedTitle} className="saved-heading">
-                  {celebrate && (
-                    <Art
-                      name="response-confirmed"
-                      className="saved-confirmation-icon"
-                    />
-                  )}
-                  {celebrate ? "התשובה נשמרה" : "התשובה הקודמת"}
+                  התשובה נשמרה
                 </h2>
                 <p className={`saved-choice choice-${saved.status}`}>
                   {savedChoice.label}
                 </p>
-                {saved.status === "maybe" && <p>נשמח לעדכון כשתדעו</p>}
-                {saved.status === "no" && (
-                  <p className="saved-decline">
-                    <Art name="response-petal" className="event-detail-icon" />
-                    תודה שעדכנתם
-                  </p>
-                )}
                 {participants && (
                   <p className="saved-participants">
                     <Art
@@ -247,7 +233,7 @@ function Invitation({ token }) {
               </div>
               <button
                 type="button"
-                className="guest-action guest-icon-action"
+                className="guest-action guest-icon-action edit-response"
                 onClick={edit}
               >
                 <Art name="response-edit" className="event-detail-icon" />
@@ -274,9 +260,6 @@ function Invitation({ token }) {
                         onChange={() => choose(value)}
                       />
                       <span>{label}</span>
-                      <span className="selection-mark" aria-hidden="true">
-                        ✓
-                      </span>
                     </label>
                   ))}
                 </div>
@@ -295,7 +278,9 @@ function Invitation({ token }) {
                     {form.status === "no" && (
                       <>
                         <h2>לא נוכל להגיע</h2>
-                        <p>תודה שעדכנתם. נתגעגע אליכם!</p>
+                        <p>
+                          תודה שעדכנתם <bdi dir="ltr">:)</bdi>
+                        </p>
                       </>
                     )}
                     {form.status === "yes" && <h2>פרטי הגעה</h2>}
@@ -349,11 +334,7 @@ function Invitation({ token }) {
           className="invitation-logistics"
           aria-labelledby="arrival-information"
         >
-          <h2 id="arrival-information">
-            <Botanical className="event-sprig" />
-            פרטי האירוע
-            <Botanical className="event-sprig" />
-          </h2>
+          <h2 id="arrival-information">פרטי האירוע</h2>
           <div className="ceremony-scene">
             <Art name="event-chuppah" className="event-chuppah" />
             <div className="event-directions">
@@ -398,7 +379,7 @@ function Invitation({ token }) {
 function ArrivalFields({ inv, form, setForm }) {
   return (
     <div className="grid3">
-      <Field label={`מבוגרים (עד ${inv.maxAdults})`}>
+      <Field label="מבוגרים">
         <select
           value={form.adults}
           onChange={(e) => setForm({ ...form, adults: Number(e.target.value) })}
