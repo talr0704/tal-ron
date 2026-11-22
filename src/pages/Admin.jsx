@@ -533,7 +533,7 @@ export default function Admin() {
                     return phone.length >= 9 && phone.length <= 15 ? (
                       <a
                         className="button"
-                        href={`https://wa.me/${phone}?text=${encodeURIComponent(preview.text)}`}
+                        href={`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(preview.text)}`}
                         target="_blank"
                         rel="noreferrer"
                         onClick={(e) => openMessage(e, previewGuest.id, type)}
