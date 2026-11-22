@@ -267,7 +267,7 @@
 }
 
 .guest-site .rsvp-greeting {
-  margin: 0 0 12px;
+  margin: 0 0 19px;
   font-size: clamp(1.3rem, 5vw, 1.65rem);
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -349,16 +349,6 @@
   position: relative;
 }
 
-.guest-site .attendance-choice .selection-mark {
-  position: absolute;
-  inset-block-start: 2px;
-  inset-inline-end: 8px;
-  font-size: 0.72rem;
-}
-
-.guest-site .attendance-choice:not(:has(:checked)) .selection-mark {
-  visibility: hidden;
-}
 .guest-site .attendance-choice:has(:disabled) {
   cursor: wait;
   opacity: 0.62;
@@ -387,23 +377,41 @@
   cursor: inherit;
 }
 
-.guest-site .response-details,
-.guest-site .response-result {
+.guest-site .response-details {
   margin-top: 14px;
   padding: 16px 0 8px;
   border-top: 1px solid #ded1ba;
 }
 
-.guest-site .response-details h2,
-.guest-site .response-result h2 {
+.guest-site .response-details h2 {
   font-size: clamp(1.45rem, 7vw, 1.9rem);
   margin: 2px 0 10px;
 }
 
-.guest-site .response-details p,
-.guest-site .response-result p {
+.guest-site .response-details p {
   margin: 4px 0 12px;
 }
+
+.guest-site .response-result {
+  padding: 14px 0 12px;
+}
+
+.guest-site .saved-heading {
+  margin: 4px 0 14px;
+  color: #171610;
+  font-size: clamp(1.5rem, 6vw, 2.05rem);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.guest-site .response-result .edit-response {
+  margin-top: 14px;
+}
+
+.guest-site :is(.response-result-maybe, .response-result-no) .edit-response {
+  margin-top: clamp(48px, 15vw, 90px);
+}
+
 .guest-site .guest-action {
   display: inline-grid;
   place-items: center;
@@ -440,7 +448,8 @@
 
 .guest-site .saved-choice {
   display: inline-block;
-  padding: 1px 22px;
+  margin: 0;
+  padding: 4px 22px;
   border-radius: 40px;
   background: var(--fill);
   border: 1px solid var(--edge);
@@ -454,7 +463,7 @@
 }
 
 .guest-site :is(.gouache-bloom, .saved-flower) {
-  width: 104px;
+  width: clamp(112px, 36vw, 148px);
   aspect-ratio: 336 / 308;
 }
 
@@ -546,14 +555,7 @@
 }
 
 .guest-site
-  :is(
-    .wedding-venue,
-    .wedding-time,
-    .event-parking,
-    .saved-heading,
-    .saved-decline,
-    .saved-participants
-  ) {
+  :is(.wedding-venue, .wedding-time, .event-parking, .saved-participants) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -572,15 +574,13 @@
   height: 17px;
 }
 
-.guest-site .saved-participants .event-detail-icon {
-  width: 41px;
-  height: 41px;
+.guest-site .saved-participants {
+  margin: 16px 0 0;
 }
 
-.guest-site .saved-confirmation-icon {
-  width: 56px;
-  height: auto;
-  flex: none;
+.guest-site .saved-participants .event-detail-icon {
+  width: 48px;
+  height: 48px;
 }
 
 .guest-site .guest-icon-action {
@@ -605,18 +605,6 @@
   margin: 0 0 10px;
   font-size: clamp(1.35rem, 6vw, 2.2rem);
   font-weight: 700;
-}
-
-.guest-site .event-sprig {
-  width: 24px;
-  height: 25px;
-  color: #7d9034;
-  fill: #b5bd65;
-  transform: rotate(63deg);
-}
-
-.guest-site .event-sprig:last-child {
-  transform: scaleX(-1) rotate(63deg);
 }
 
 .guest-site .ceremony-scene {

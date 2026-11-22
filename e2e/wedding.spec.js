@@ -6,17 +6,18 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
     page.getByRole("heading", { name: "החתונה של טל ורון", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".rsvp-greeting")).toHaveText("היי, נועה ישראלי!");
-  await expect(page.locator(".attendance-choice img")).toHaveCount(0);
-  await expect(page.locator(".saved-confirmation-icon")).toHaveCount(0);
+  await expect(page.locator(".attendance-choices")).not.toContainText("✓");
+  await expect(
+    page.getByRole("heading", { name: "פרטי האירוע" }).locator("svg"),
+  ).toHaveCount(0);
   await page.getByRole("radio", { name: "מגיעים!" }).check();
-  await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("1");
-  await page.getByLabel("מבוגרים (עד 2)").selectOption("2");
+  await expect(page.getByLabel("מבוגרים")).toHaveValue("1");
+  await page.getByLabel("מבוגרים").selectOption("2");
   await page.getByLabel("ילדים מגיל 5", { exact: true }).fill("25");
   await page.getByLabel("ילדים מתחת לגיל 5", { exact: true }).fill("12");
   await expect(page.getByLabel(/מנה לאורח/)).toHaveCount(0);
   await page.getByRole("button", { name: "שמירת אישור הגעה" }).click();
   await expect(page.getByRole("status")).toContainText("התשובה נשמרה");
-  await expect(page.locator(".saved-confirmation-icon")).toBeVisible();
   await expect(page.locator(".saved-participants")).toContainText("2 מבוגרים");
   await expect(page.locator(".saved-participants")).toContainText(
     "12 ילדים מתחת לגיל 5",
@@ -26,9 +27,8 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
   await expect(page.getByRole("status")).toContainText("מגיעים!");
   await expect(page.locator(".bloom-frame")).toHaveCount(0);
   await expect(page.locator(".saved-flower")).toBeVisible();
-  await expect(page.locator(".saved-confirmation-icon")).toHaveCount(0);
   await page.getByRole("button", { name: "עדכון תשובה" }).click();
-  await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("2");
+  await expect(page.getByLabel("מבוגרים")).toHaveValue("2");
   await expect(page.getByLabel("ילדים מגיל 5", { exact: true })).toHaveValue(
     "25",
   );
@@ -151,22 +151,22 @@ test("guest can answer maybe, decline and receives invalid-link feedback", async
   );
   await page.getByRole("button", { name: "שמירת אישור הגעה" }).click();
   await expect(page.getByRole("status")).toContainText("התשובה נשמרה");
-  await expect(page.getByText("נשמח לעדכון כשתדעו")).toBeVisible();
+  await expect(page.locator(".saved-choice")).toHaveText("אולי");
   await expect(page.locator(".resting-dove")).toBeVisible();
   await page.getByRole("button", { name: "עדכון תשובה" }).click();
   await page.getByRole("radio", { name: "לא נוכל להגיע", exact: true }).check();
+  await expect(page.getByText("תודה שעדכנתם :)")).toBeVisible();
   await expect(page.getByLabel(/מנה לאורח/)).toHaveCount(0);
   await page.getByRole("button", { name: "שמירת אישור הגעה" }).click();
   await page.reload();
   await expect(page.getByRole("status")).toContainText("לא נוכל להגיע");
-  await expect(page.locator(".saved-decline img")).toHaveAttribute(
-    "src",
-    "/images/gouache/response-petal.webp",
-  );
+  await expect(
+    page.getByRole("heading", { name: "התשובה נשמרה" }),
+  ).toBeVisible();
   await expect(page.locator(".saved-participants")).toHaveCount(0);
   await page.getByRole("button", { name: "עדכון תשובה" }).click();
   await page.getByRole("radio", { name: "מגיעים!" }).check();
-  await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("1");
+  await expect(page.getByLabel("מבוגרים")).toHaveValue("1");
   await page.goto("/admin");
   await expect(
     page.locator("tr").filter({ hasText: "נועה ישראלי" }),
@@ -257,7 +257,7 @@ test("personal invitation fits at both widths and retains a keyboard draft after
   await page.keyboard.press("ArrowUp");
   await expect(radios.first()).toBeChecked();
 
-  await page.getByLabel("מבוגרים (עד 2)").selectOption("2");
+  await page.getByLabel("מבוגרים").selectOption("2");
   await page.getByLabel("הערות (אופציונלי)").fill("הערת בדיקה");
   await page.evaluate(() => {
     const write = Storage.prototype.setItem;
@@ -274,7 +274,7 @@ test("personal invitation fits at both widths and retains a keyboard draft after
     0,
   );
   await expect(page.getByLabel("הערות (אופציונלי)")).toHaveValue("הערת בדיקה");
-  await expect(page.getByLabel("מבוגרים (עד 2)")).toHaveValue("2");
+  await expect(page.getByLabel("מבוגרים")).toHaveValue("2");
   await expect(save).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("status")).toContainText("התשובה נשמרה");
