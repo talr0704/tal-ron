@@ -223,10 +223,10 @@ function Invitation({ token }) {
                 </p>
                 {participants && (
                   <p className="saved-participants">
-                    <Art
+                    {/* <Art
                       name="response-participants"
                       className="event-detail-icon"
-                    />
+                    /> */}
                     <span>{participants}</span>
                   </p>
                 )}
