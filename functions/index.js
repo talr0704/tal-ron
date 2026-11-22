@@ -4,6 +4,7 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { randomBytes, createHash } from "node:crypto";
 import {
   defaultEvent,
+  canMessageGuest,
   validateResponse,
   validateGuest,
   validateEvent,
@@ -138,15 +139,22 @@ export const adminMarkSent = onCall(options, async (req) => {
     !["initial", "pending", "maybe"].includes(type)
   )
     throw new HttpsError("invalid-argument", "Invalid message");
-  await db
-    .collection("guests")
-    .doc(id)
-    .update({
+  const ref = db.collection("guests").doc(id);
+  await db.runTransaction(async (tx) => {
+    const guest = await tx.get(ref);
+    if (!guest.exists) throw new HttpsError("not-found", "Guest not found");
+    if (!canMessageGuest(guest.data(), type))
+      throw new HttpsError(
+        "failed-precondition",
+        "מסטטוס ההגעה הנוכחי אי אפשר לסמן הודעה מסוג זה.",
+      );
+    tx.update(ref, {
       sent: FieldValue.arrayUnion({
         type,
         at: new Date().toISOString(),
         by: req.auth.uid,
       }),
     });
+  });
   return { ok: true };
 });

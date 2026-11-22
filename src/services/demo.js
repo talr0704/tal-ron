@@ -1,4 +1,9 @@
-import { defaultEvent, token, validateResponse } from "./model";
+import {
+  canMessageGuest,
+  defaultEvent,
+  token,
+  validateResponse,
+} from "./model";
 import { validateGuest, validateEvent } from "../../functions/model.js";
 const key = "tal-ron-demo-v1";
 const initial = () => ({
@@ -90,6 +95,8 @@ export const demo = {
   markSent: async (id, type) => {
     const db = read(),
       g = db.guests.find((g) => g.id === id);
+    if (!g || !canMessageGuest(g, type))
+      throw Error("מסטטוס ההגעה הנוכחי אי אפשר לסמן הודעה מסוג זה.");
     g.sent = [...(g.sent || []), { type, at: new Date().toISOString() }];
     write(db);
   },

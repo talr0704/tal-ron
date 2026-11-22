@@ -68,6 +68,10 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
   await page.getByRole("button", { name: "ייצוא CSV" }).click();
   expect((await download).suggestedFilename()).toBe("tal-ron-guests.csv");
   await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
+  await expect(
+    page.locator(".recipient").filter({ hasText: "איתי כהן" }),
+  ).toHaveCount(0);
+
   await expect(page.locator(".message-example")).toHaveCount(2);
   await expect(page.locator(".message-examples")).toContainText(
     "{הקישור האישי}",
@@ -101,6 +105,23 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
   await expect(
     page.locator(".recipient").filter({ hasText: "בדיקת אורח" }),
   ).toContainText("אישורי שליחה: 1");
+  await page.getByLabel("תבנית", { exact: true }).selectOption("pending");
+  await page
+    .locator(".recipient")
+    .filter({ hasText: "בדיקת אורח" })
+    .getByRole("checkbox")
+    .check();
+  await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
+  await page.getByRole("button", { name: "אני מאשר/ת ששלחתי בפועל" }).click();
+  await expect(
+    page.locator(".recipient").filter({ hasText: "בדיקת אורח" }),
+  ).toContainText("אישורי שליחה: 2");
+  await page.getByRole("button", { name: "מוזמנים ואישורי הגעה" }).click();
+  const history = page.getByRole("row").filter({ hasText: "בדיקת אורח" });
+  await expect(history).toContainText("הודעות שסומנו כנשלחות: 2");
+  await expect(history).toContainText("תזכורות שנשלחו: 1");
+  await expect(history).toContainText("הזמנה ראשונית: 1");
+  await expect(history).toContainText("תזכורת לטרם השיבו: 1");
 });
 test("landing page is RTL and fits desktop/mobile", async ({
   page,
@@ -309,4 +330,51 @@ test("admin can cancel or confirm deletion and the deleted invite stops working"
 
   await page.goto("/i/demo");
   await expect(page.getByRole("alert")).toContainText("הקישור אינו תקין");
+});
+
+test("WhatsApp preview rechecks eligibility when a guest replies in another tab", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/admin");
+  await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
+  const recipient = page
+    .locator(".recipient")
+    .filter({ hasText: "נועה ישראלי" });
+  await recipient.getByRole("checkbox").check();
+  await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
+
+  const invitation = await context.newPage();
+  await invitation.goto("/i/demo");
+  await invitation.getByRole("radio", { name: "אולי", exact: true }).check();
+  await invitation.getByRole("button", { name: "שמירת אישור הגעה" }).click();
+  await expect(invitation.getByRole("status")).toContainText("התשובה נשמרה");
+  await invitation.close();
+
+  await page.reload();
+  await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
+  await page.getByLabel("תבנית").selectOption("maybe");
+  await recipient.getByRole("checkbox").check();
+  await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
+
+  const updatedInvitation = await context.newPage();
+  await updatedInvitation.goto("/i/demo");
+  await updatedInvitation.getByRole("button", { name: "עדכון תשובה" }).click();
+  await updatedInvitation
+    .getByRole("radio", { name: "לא נוכל להגיע", exact: true })
+    .check();
+  await updatedInvitation
+    .getByRole("button", { name: "שמירת אישור הגעה" })
+    .click();
+  await expect(updatedInvitation.getByRole("status")).toContainText(
+    "לא נוכל להגיע",
+  );
+  await updatedInvitation.close();
+
+  await page.getByRole("link", { name: "פתיחת WhatsApp" }).click();
+  await expect(page.getByRole("alert")).toContainText("המוזמן כבר אינו מתאים");
+  await expect(recipient).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "פתיחת WhatsApp" })).toHaveCount(
+    0,
+  );
 });

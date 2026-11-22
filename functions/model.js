@@ -70,3 +70,11 @@ export function validateEvent(e) {
     ),
   );
 }
+
+export function canMessageGuest(guest, type) {
+  const status = guest.response?.status || "pending";
+  return (
+    (status === "pending" || status === "maybe") &&
+    (type === "initial" || type === status)
+  );
+}
