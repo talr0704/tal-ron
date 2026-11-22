@@ -118,8 +118,8 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
   ).toContainText("אישורי שליחה: 2");
   await page.getByRole("button", { name: "מוזמנים ואישורי הגעה" }).click();
   const history = page.getByRole("row").filter({ hasText: "בדיקת אורח" });
-  await expect(history).toContainText("הודעות שסומנו כנשלחות: 2");
-  await expect(history).toContainText("תזכורות שנשלחו: 1");
+  await expect(history).toContainText("הודעות שנשלחו: 2");
+  await expect(history).not.toContainText("תזכורות שנשלחו");
   await expect(history).toContainText("הזמנה ראשונית: 1");
   await expect(history).toContainText("תזכורת לטרם השיבו: 1");
 });
