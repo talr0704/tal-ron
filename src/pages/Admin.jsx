@@ -306,10 +306,6 @@ export default function Admin() {
                   />
                 </label>
               </div>
-              <p className="muted">
-                ייבוא מוסיף הזמנות. כותרות: name, phone, side, maxAdults. צד:
-                tal / ron.
-              </p>
               <div className="toolbar">
                 <input
                   aria-label="חיפוש מוזמנים"
