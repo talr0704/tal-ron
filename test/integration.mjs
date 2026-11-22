@@ -1,11 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import { createHash } from "node:crypto";
 const require = createRequire(
   new URL("../functions/package.json", import.meta.url),
 );
 const { initializeApp } = require("firebase-admin/app");
 const { getAuth } = require("firebase-admin/auth");
+const { getFirestore } = require("firebase-admin/firestore");
 initializeApp({ projectId: "demo-tal-ron" });
 const base = "http://127.0.0.1:5001/demo-tal-ron/europe-west1/";
 async function call(name, data = {}, token) {
@@ -113,5 +115,26 @@ test("secure invitation lifecycle, admin checks and Firestore deny rules", async
     (await fetch(url, { headers: { Authorization: "Bearer " + token } }))
       .status,
     403,
+  );
+
+  const deletion = { id: g.id };
+  assert.equal((await call("adminDeleteGuest", deletion)).status, 403);
+  assert.equal(
+    (await call("adminDeleteGuest", deletion, nonAdmin)).status,
+    403,
+  );
+  assert.equal((await call("adminList", {}, token)).result.length, 1);
+  assert.equal((await call("adminDeleteGuest", deletion, token)).status, 200);
+  assert.equal((await call("adminDeleteGuest", deletion, token)).status, 200);
+  assert.deepEqual((await call("adminList", {}, token)).result, []);
+  assert.equal((await call("guestInvitation", { token: g.token })).status, 404);
+  assert.equal(
+    (await call("respond", { token: g.token, response })).status,
+    404,
+  );
+  const digest = createHash("sha256").update(g.token).digest("hex");
+  assert.equal(
+    (await getFirestore().doc(`invitationTokens/${digest}`).get()).exists,
+    false,
   );
 });

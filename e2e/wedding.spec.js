@@ -285,3 +285,28 @@ test("personal invitation fits at both widths and retains a keyboard draft after
   await expect(radios.first()).toBeFocused();
   await expect(page.getByLabel("הערות (אופציונלי)")).toHaveValue("הערת בדיקה");
 });
+
+test("admin can cancel or confirm deletion and the deleted invite stops working", async ({
+  page,
+}) => {
+  await page.goto("/admin");
+  const row = page.getByRole("row").filter({ hasText: "נועה ישראלי" });
+  const remove = row.getByRole("button", {
+    name: "מחיקת ההזמנה של נועה ישראלי",
+  });
+
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await remove.click();
+  await expect(row).toBeVisible();
+
+  page.once("dialog", (dialog) => dialog.accept());
+  await remove.click();
+  await expect(page.getByRole("status")).toContainText("המוזמן נמחק");
+  await expect(row).toHaveCount(0);
+  await expect(
+    page.getByRole("row").filter({ hasText: "איתי כהן" }),
+  ).toBeVisible();
+
+  await page.goto("/i/demo");
+  await expect(page.getByRole("alert")).toContainText("הקישור אינו תקין");
+});

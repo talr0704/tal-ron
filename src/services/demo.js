@@ -77,6 +77,11 @@ export const demo = {
     else db.guests[i] = next;
     write(db);
   },
+  deleteGuest: async (id) => {
+    const db = read();
+    db.guests = db.guests.filter((guest) => guest.id !== id);
+    write(db);
+  },
   saveEvent: async (event) => {
     const db = read();
     db.event = { ...db.event, ...validateEvent(event) };
