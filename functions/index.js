@@ -105,6 +105,24 @@ export const adminSaveGuest = onCall(options, async (req) => {
   });
   return { ok: true };
 });
+export const adminDeleteGuest = onCall(options, async (req) => {
+  admin(req);
+  const id = req.data?.id;
+  if (typeof id !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(id))
+    throw new HttpsError("invalid-argument", "Invalid ID");
+
+  const ref = db.collection("guests").doc(id);
+  await db.runTransaction(async (tx) => {
+    const guest = await tx.get(ref);
+    if (!guest.exists) return;
+
+    const { token } = guest.data();
+    if (typeof token === "string" && /^[a-f0-9]{64}$/.test(token))
+      tx.delete(tokenRef(token));
+    tx.delete(ref);
+  });
+  return { ok: true };
+});
 export const adminSaveEvent = onCall(options, async (req) => {
   admin(req);
   const e = checked(() => validateEvent(req.data?.event));

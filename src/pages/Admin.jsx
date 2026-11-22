@@ -112,6 +112,22 @@ export default function Admin() {
   function link(g) {
     return `${location.origin}/i/${g.token}`;
   }
+  function deleteGuest(guest) {
+    if (
+      busy ||
+      !window.confirm(
+        `למחוק את ההזמנה של ${guest.name}? התשובה שנשמרה תימחק והקישור האישי יבוטל.`,
+      )
+    )
+      return;
+
+    return action(async () => {
+      await api.deleteGuest(guest.id);
+      setGuests((current) => current.filter(({ id }) => id !== guest.id));
+      setSelected((current) => current.filter((id) => id !== guest.id));
+      setPreview((current) => (current?.id === guest.id ? null : current));
+    }, "המוזמן נמחק");
+  }
   function download() {
     const url = URL.createObjectURL(
       new Blob([exportGuests(guests)], { type: "text/csv;charset=utf-8;" }),
@@ -315,6 +331,15 @@ export default function Admin() {
                             }
                           >
                             העתקת קישור
+                          </button>{" "}
+                          <button
+                            type="button"
+                            className="delete-guest"
+                            aria-label={`מחיקת ההזמנה של ${g.name}`}
+                            disabled={busy}
+                            onClick={() => deleteGuest(g)}
+                          >
+                            מחיקה
                           </button>
                         </td>
                       </tr>

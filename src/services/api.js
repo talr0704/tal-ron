@@ -43,6 +43,7 @@ export const api = isDemo
       respond: (token, response) => call("respond", { token, response }),
       list: () => call("adminList"),
       saveGuest: (guest) => call("adminSaveGuest", { guest }),
+      deleteGuest: (id) => call("adminDeleteGuest", { id }),
       saveEvent: (event) => call("adminSaveEvent", { event }),
       markSent: (id, type) => call("adminMarkSent", { id, type }),
     };

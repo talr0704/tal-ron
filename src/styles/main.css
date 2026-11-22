@@ -616,3 +616,7 @@ td button {
     grid-template-columns: 1fr;
   }
 }
+
+.admin .delete-guest {
+  color: #8c2a38;
+}
