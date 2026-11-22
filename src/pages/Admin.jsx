@@ -26,15 +26,11 @@ function MessageHistory({ sent = [] }) {
       sent.filter((entry) => entry.type === type).length,
     ]),
   );
-  const reminders = counts.pending + counts.maybe;
-  const unknown = sent.length - counts.initial - reminders;
+  const unknown = sent.length - counts.initial - counts.pending - counts.maybe;
 
   return (
     <>
-      <strong>הודעות שסומנו כנשלחות: {sent.length}</strong>
-      <small className="block">
-        {reminders ? `תזכורות שנשלחו: ${reminders}` : "לא נשלחה תזכורת"}
-      </small>
+      <strong>הודעות שנשלחו: {sent.length}</strong>
       {Object.entries(messageLabels).map(
         ([type, label]) =>
           counts[type] > 0 && (
