@@ -8,11 +8,6 @@ export default function MessageExamples({ event, type, style, onSelect }) {
       aria-labelledby="message-examples-title"
     >
       <h3 id="message-examples-title">דוגמאות להודעות</h3>
-      <p className="muted">
-        הדוגמאות זמינות גם ללא בחירת מוזמנים. בהכנת הודעה לנמען, שם המוזמן
-        והקישור האישי יוחלפו אוטומטית בפרטים שלו. אפשר לערוך את הנוסח לפני פתיחת
-        WhatsApp.
-      </p>
       <div className="example-grid">
         {[
           ["casual", "קליל ואישי"],
