@@ -57,6 +57,7 @@ test("mobile guest RSVP, editing and dashboard counts", async ({ page }) => {
 });
 test("admin creates capped invitation, CSV export and manual WhatsApp status", async ({
   page,
+  context,
 }) => {
   await page.goto("/admin");
   await page.getByRole("button", { name: "＋ הוספת מוזמן" }).click();
@@ -92,12 +93,26 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
     .getByRole("checkbox")
     .check();
   await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
-  expect(await page.getByLabel("תוכן ההודעה").inputValue()).toContain("/i/");
+  const message = await page.getByLabel("תוכן ההודעה").inputValue();
+  expect(message).toContain("/i/");
+  expect(message).toContain("💛");
+  expect(message).toContain("💍");
+  expect(message).toContain("🤍");
   const wa = page.getByRole("link", { name: "פתיחת WhatsApp" });
-  await expect(wa).toHaveAttribute(
-    "href",
-    /^https:\/\/wa.me\/972500000000\?text=/,
+  const draftUrl = new URL(await wa.getAttribute("href"));
+  expect(draftUrl.origin + draftUrl.pathname).toBe(
+    "https://api.whatsapp.com/send",
   );
+  expect(draftUrl.searchParams.get("phone")).toBe("972500000000");
+
+  await context.route("https://api.whatsapp.com/send?*", (route) =>
+    route.fulfill({ body: "WhatsApp draft test" }),
+  );
+  const request = context.waitForEvent("request", (req) =>
+    req.url().startsWith("https://api.whatsapp.com/send?"),
+  );
+  await wa.click();
+  expect(new URL((await request).url()).searchParams.get("text")).toBe(message);
   await expect(
     page.locator(".recipient").filter({ hasText: "בדיקת אורח" }),
   ).toContainText("אישורי שליחה: 0");
