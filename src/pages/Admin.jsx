@@ -59,6 +59,8 @@ export default function Admin() {
     [type, setType] = useState("initial"),
     [style, setStyle] = useState("casual"),
     [copied, setCopied] = useState(null),
+    [queueMode, setQueueMode] = useState(false),
+    [skippedByType, setSkippedByType] = useState({}),
     [busy, setBusy] = useState(false);
   useEffect(() => watchAdmin(setAdmin), []);
   async function reload() {
@@ -131,6 +133,17 @@ export default function Admin() {
       (side === "all" || g.side === side),
   );
   const recipients = guests.filter((guest) => canMessageGuest(guest, type));
+  const unsent = recipients.filter(
+    (guest) => !guest.sent?.some((entry) => entry.type === type),
+  );
+  const skipped = skippedByType[type] ?? [];
+  const queue = [
+    ...unsent.filter((guest) => !skipped.includes(guest.id)),
+    ...skipped
+      .map((id) => unsent.find((guest) => guest.id === id))
+      .filter(Boolean),
+  ];
+  const visibleRecipients = queueMode ? queue.slice(0, 1) : recipients;
   const yes = guests.filter((g) => g.response?.status === "yes");
   const sum = (k) => yes.reduce((n, g) => n + (g.response[k] || 0), 0);
   const counts = Object.fromEntries(
@@ -168,6 +181,28 @@ export default function Admin() {
       });
     }
   }
+  function skipRecipient(id) {
+    setCopied(null);
+    setSkippedByType((current) => ({
+      ...current,
+      [type]: [...(current[type] ?? []).filter((entry) => entry !== id), id],
+    }));
+  }
+
+  function markRecipientSent(id) {
+    return action(async () => {
+      await api.markSent(id, type);
+      setCopied(null);
+      setGuests((current) =>
+        current.map((guest) =>
+          guest.id === id
+            ? { ...guest, sent: [...(guest.sent ?? []), { type }] }
+            : guest,
+        ),
+      );
+    }, "השליחה סומנה ידנית");
+  }
+
   function download() {
     const url = URL.createObjectURL(
       new Blob([exportGuests(guests)], { type: "text/csv;charset=utf-8;" }),
@@ -440,9 +475,29 @@ export default function Admin() {
                   setCopied(null);
                 }}
               />
-              <h3>הודעות אישיות למוזמנים</h3>
-              {!recipients.length && <p>אין מוזמנים מתאימים לתבנית הזו.</p>}
-              {recipients.map((guest) => {
+              <div className="toolbar">
+                <h3>{queueMode ? "תור שליחה" : "הודעות אישיות למוזמנים"}</h3>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCopied(null);
+                    setQueueMode(!queueMode);
+                  }}
+                >
+                  {queueMode ? "חזרה לרשימת המוזמנים" : "התחלת תור שליחה"}
+                </button>
+              </div>
+              {queueMode && (
+                <p aria-live="polite">
+                  {queue.length
+                    ? `נותרו בתור: ${queue.length} · הבא בתור: ${queue[0].name}`
+                    : "אין עוד מוזמנים בתור לתבנית הזו."}
+                </p>
+              )}
+              {!queueMode && !recipients.length && (
+                <p>אין מוזמנים מתאימים לתבנית הזו.</p>
+              )}
+              {visibleRecipients.map((guest) => {
                 const phone = guest.phone?.trim();
                 return (
                   <div className="recipient" key={guest.id}>
@@ -478,15 +533,19 @@ export default function Admin() {
                       <button
                         type="button"
                         disabled={busy}
-                        onClick={() =>
-                          action(
-                            () => api.markSent(guest.id, type),
-                            "השליחה סומנה ידנית",
-                          )
-                        }
+                        onClick={() => markRecipientSent(guest.id)}
                       >
-                        סימון כנשלחה
+                        {queueMode ? "סימון כנשלחה והבא" : "סימון כנשלחה"}
                       </button>
+                      {queueMode && (
+                        <button
+                          type="button"
+                          disabled={busy || queue.length < 2}
+                          onClick={() => skipRecipient(guest.id)}
+                        >
+                          דילוג להמשך התור
+                        </button>
+                      )}
                     </div>
                     {copied?.id === guest.id && (
                       <small className="recipient-feedback" role="status">

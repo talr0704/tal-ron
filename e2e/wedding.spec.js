@@ -411,3 +411,37 @@ test("admin imports Excel rows and preserves leading zeros in phone text", async
     page.getByRole("row").filter({ hasText: "אורחת מאקסל" }),
   ).toHaveCount(1);
 });
+
+test("send queue skips, advances after confirmation and remembers sent templates", async ({
+  page,
+}) => {
+  await page.goto("/admin");
+  await page
+    .getByLabel("ייבוא CSV או Excel")
+    .setInputFiles("e2e/fixtures/sample-guests.xlsx");
+  await expect(page.getByRole("status")).toContainText("הייבוא הושלם");
+  await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
+  await page.getByRole("button", { name: "התחלת תור שליחה" }).click();
+
+  const current = page.locator(".recipient");
+  await expect(current).toHaveCount(1);
+  await expect(current).toContainText("נועה ישראלי");
+  await expect(page.getByText(/נותרו בתור: 3/)).toBeVisible();
+  await current.getByRole("button", { name: "דילוג להמשך התור" }).click();
+  await expect(current).toContainText("אורחת מאקסל");
+  await expect(page.getByText(/נותרו בתור: 3/)).toBeVisible();
+
+  await current.getByRole("button", { name: "סימון כנשלחה והבא" }).click();
+  await expect(current).toContainText("אורח מאקסל");
+  await expect(page.getByText(/נותרו בתור: 2/)).toBeVisible();
+  await expect(page.getByRole("status")).toContainText("השליחה סומנה ידנית");
+  await current.getByRole("button", { name: "דילוג להמשך התור" }).click();
+  await expect(current).toContainText("נועה ישראלי");
+
+  await page.reload();
+  await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
+  await page.getByRole("button", { name: "התחלת תור שליחה" }).click();
+  await expect(page.getByText(/נותרו בתור: 2/)).toBeVisible();
+  await page.getByLabel("תבנית", { exact: true }).selectOption("pending");
+  await expect(page.getByText(/נותרו בתור: 3/)).toBeVisible();
+});
