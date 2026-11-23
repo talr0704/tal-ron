@@ -463,7 +463,7 @@
 }
 
 .guest-site :is(.gouache-bloom, .saved-flower) {
-  width: clamp(112px, 36vw, 148px);
+  width: clamp(100px, 32vw, 132px);
   aspect-ratio: 336 / 308;
 }
 
