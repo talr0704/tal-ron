@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, isDemo, login, logout, watchAdmin } from "../services/api";
 import { canMessageGuest, statuses, messageFor } from "../services/model";
-import { parseGuests, exportGuests } from "../services/csv";
+import { parseGuestFile, exportGuests } from "../services/csv";
 import Field from "../components/Field";
 import Arrow from "../components/Arrow";
 import GuestCounts from "../components/GuestCounts";
@@ -280,15 +280,16 @@ export default function Admin() {
                 </button>
                 <button onClick={download}>ייצוא CSV</button>
                 <label className="filebutton">
-                  ייבוא CSV
+                  ייבוא CSV או Excel
                   <input
                     type="file"
-                    accept=".csv,text/csv"
+                    accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    disabled={busy}
                     onChange={async (e) => {
                       const f = e.target.files[0];
                       if (!f) return;
                       await action(async () => {
-                        const rows = parseGuests(await f.text());
+                        const rows = await parseGuestFile(f);
                         let done = 0;
                         try {
                           for (const row of rows) {
