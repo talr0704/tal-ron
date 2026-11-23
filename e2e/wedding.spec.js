@@ -393,3 +393,32 @@ test("WhatsApp preview rechecks eligibility when a guest replies in another tab"
     0,
   );
 });
+
+test("admin imports Excel rows and preserves leading zeros in phone text", async ({
+  page,
+}) => {
+  await page.goto("/admin");
+  await page
+    .getByLabel("ייבוא CSV או Excel")
+    .setInputFiles("e2e/fixtures/sample-guests.xlsx");
+  await expect(page.getByRole("status")).toContainText("הייבוא הושלם");
+  await expect(
+    page.getByRole("row").filter({ hasText: "אורחת מאקסל" }),
+  ).toContainText("0500000000");
+  await expect(
+    page.getByRole("row").filter({ hasText: "אורח מאקסל" }),
+  ).toBeVisible();
+
+  await page.getByLabel("ייבוא CSV או Excel").setInputFiles({
+    name: "broken.xlsx",
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    buffer: Buffer.from("invalid workbook"),
+  });
+  await expect(page.getByRole("alert")).toContainText(
+    "לא ניתן לקרוא את קובץ האקסל",
+  );
+  await expect(
+    page.getByRole("row").filter({ hasText: "אורחת מאקסל" }),
+  ).toHaveCount(1);
+});

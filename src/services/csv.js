@@ -10,18 +10,50 @@ export function parseGuests(text) {
     columns.some((c) => !parsed.meta.fields?.includes(c))
   )
     throw Error("כותרות CSV נדרשות: " + columns.join(", "));
-  return parsed.data.map((row, i) => {
-    const g = Object.fromEntries(columns.map((c) => [c, row[c]?.trim()]));
-    g.maxAdults = Number(g.maxAdults);
-    if (
-      !g.name ||
-      !["tal", "ron"].includes(g.side) ||
-      !Number.isInteger(g.maxAdults) ||
-      g.maxAdults < 1 ||
-      g.maxAdults > 20
-    )
-      throw Error(`נתונים לא תקינים בשורה ${i + 2}`);
-    return g;
+  return parsed.data.map((row, i) => parseGuestRow(row, i + 2));
+}
+
+function parseGuestRow(row, line) {
+  const guest = Object.fromEntries(
+    columns.map((key) => [key, String(row[key] ?? "").trim()]),
+  );
+  guest.maxAdults = Number(guest.maxAdults);
+  if (
+    !guest.name ||
+    !["tal", "ron"].includes(guest.side) ||
+    !Number.isInteger(guest.maxAdults) ||
+    guest.maxAdults < 1 ||
+    guest.maxAdults > 20
+  )
+    throw Error(`נתונים לא תקינים בשורה ${line}`);
+  return guest;
+}
+
+export async function parseGuestFile(file) {
+  if (/\.csv$/i.test(file.name)) return parseGuests(await file.text());
+  if (!/\.xlsx$/i.test(file.name)) throw Error("יש לבחור קובץ CSV או XLSX.");
+
+  const { readSheet } = await import("read-excel-file/browser");
+  let sheet;
+  try {
+    sheet = await readSheet(file);
+  } catch {
+    throw Error("לא ניתן לקרוא את קובץ האקסל. בדקו שהוא קובץ XLSX תקין.");
+  }
+
+  const [headers = [], ...rows] = sheet;
+  const positions = columns.map((key) =>
+    headers.findIndex((header) => String(header ?? "").trim() === key),
+  );
+  if (positions.some((position) => position === -1))
+    throw Error("כותרות נדרשות בגיליון הראשון: " + columns.join(", "));
+
+  return rows.flatMap((row, i) => {
+    if (row.every((value) => !String(value ?? "").trim())) return [];
+    const values = Object.fromEntries(
+      columns.map((key, index) => [key, row[positions[index]]]),
+    );
+    return [parseGuestRow(values, i + 2)];
   });
 }
 export function exportGuests(guests) {
