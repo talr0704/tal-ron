@@ -4,7 +4,6 @@ import { api, isDemo, login, logout, watchAdmin } from "../services/api";
 import { canMessageGuest, statuses, messageFor } from "../services/model";
 import { parseGuestFile, exportGuests } from "../services/csv";
 import Field from "../components/Field";
-import Arrow from "../components/Arrow";
 import GuestCounts from "../components/GuestCounts";
 import MessageExamples from "../components/MessageExamples";
 const blank = {
@@ -57,10 +56,9 @@ export default function Admin() {
     [filter, setFilter] = useState("all"),
     [side, setSide] = useState("all"),
     [edit, setEdit] = useState(null),
-    [selected, setSelected] = useState([]),
     [type, setType] = useState("initial"),
     [style, setStyle] = useState("casual"),
-    [preview, setPreview] = useState(null),
+    [copied, setCopied] = useState(null),
     [busy, setBusy] = useState(false);
   useEffect(() => watchAdmin(setAdmin), []);
   async function reload() {
@@ -133,12 +131,6 @@ export default function Admin() {
       (side === "all" || g.side === side),
   );
   const recipients = guests.filter((guest) => canMessageGuest(guest, type));
-  const selectedRecipients = recipients.filter((guest) =>
-    selected.includes(guest.id),
-  );
-  const previewGuest = selectedRecipients.find(
-    (guest) => guest.id === preview?.id,
-  );
   const yes = guests.filter((g) => g.response?.status === "yes");
   const sum = (k) => yes.reduce((n, g) => n + (g.response[k] || 0), 0);
   const counts = Object.fromEntries(
@@ -162,33 +154,18 @@ export default function Admin() {
     return action(async () => {
       await api.deleteGuest(guest.id);
       setGuests((current) => current.filter(({ id }) => id !== guest.id));
-      setSelected((current) => current.filter((id) => id !== guest.id));
-      setPreview((current) => (current?.id === guest.id ? null : current));
     }, "המוזמן נמחק");
   }
-  async function openMessage(event, id, messageType) {
-    event.preventDefault();
-    const url = event.currentTarget.href;
-    const target = window.open("", "_blank");
-    if (!target) {
-      setError("הדפדפן חסם את פתיחת WhatsApp.");
-      return;
-    }
-    target.opener = null;
-    setError("");
+  async function copyRecipientText(id, text, feedback) {
+    setCopied(null);
     try {
-      const latest = await api.list();
-      setGuests(latest);
-      const guest = latest.find((entry) => entry.id === id);
-      if (!guest || !canMessageGuest(guest, messageType)) {
-        target.close();
-        setError("המוזמן כבר אינו מתאים לשליחת הודעה מסוג זה.");
-        return;
-      }
-      target.location.replace(url);
+      await navigator.clipboard.writeText(text);
+      setCopied({ id, feedback });
     } catch {
-      target.close();
-      setError("לא ניתן לבדוק את סטטוס המוזמן. נסו שוב.");
+      setCopied({
+        id,
+        feedback: "ההעתקה נכשלה. בדקו את הרשאות הלוח ונסו שוב.",
+      });
     }
   }
   function download() {
@@ -422,9 +399,8 @@ export default function Admin() {
             <section className="card">
               <h2>קצת אהבה, ישר לוואטסאפ</h2>
               <p>
-                פתיחת הודעה מוכנה בלבד. אישורי הגעה באתר, וסימון שליחה רק לאחר
-                אישור שלכם. רק מי שטרם השיבו או סימנו ״אולי״ יופיעו ברשימת
-                הנמענים.
+                העתיקו את המספר לחיפוש ב־WhatsApp ואת ההודעה להדבקה בצ׳אט. סמנו
+                שליחה לאחר ששלחתם בפועל.
               </p>
               <div className="grid3">
                 <Field label="תבנית">
@@ -432,8 +408,7 @@ export default function Admin() {
                     value={type}
                     onChange={(e) => {
                       setType(e.target.value);
-                      setSelected([]);
-                      setPreview(null);
+                      setCopied(null);
                     }}
                   >
                     {Object.entries(messageLabels).map(([value, label]) => (
@@ -448,7 +423,7 @@ export default function Admin() {
                     value={style}
                     onChange={(e) => {
                       setStyle(e.target.value);
-                      setPreview(null);
+                      setCopied(null);
                     }}
                   >
                     <option value="casual">קליל ואישי</option>
@@ -462,102 +437,65 @@ export default function Admin() {
                 style={style}
                 onSelect={(next) => {
                   setStyle(next);
-                  setPreview(null);
+                  setCopied(null);
                 }}
               />
-              <h3>בחירת מוזמנים להכנת הודעה אישית</h3>
+              <h3>הודעות אישיות למוזמנים</h3>
               {!recipients.length && <p>אין מוזמנים מתאימים לתבנית הזו.</p>}
-              {recipients.map((g) => (
-                <label className="recipient" key={g.id}>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(g.id)}
-                    onChange={(e) => {
-                      setSelected(
-                        e.target.checked
-                          ? [...selected, g.id]
-                          : selected.filter((id) => id !== g.id),
-                      );
-                      setPreview(null);
-                    }}
-                  />
-                  {g.name}
-                  <small>אישורי שליחה: {g.sent?.length || 0}</small>
-                </label>
-              ))}
-              <button
-                disabled={!selectedRecipients.length}
-                onClick={() => {
-                  const [g] = selectedRecipients;
-                  setPreview({
-                    id: g.id,
-                    text: messageFor(g, event, type, style, link(g)),
-                  });
-                }}
-              >
-                תצוגה מקדימה ועריכה ({selectedRecipients.length})
-              </button>
-              {previewGuest && (
-                <div className="preview">
-                  <Field label="נמען">
-                    <select
-                      value={preview.id}
-                      onChange={(e) => {
-                        const g = selectedRecipients.find(
-                          (g) => g.id === e.target.value,
-                        );
-                        setPreview({
-                          id: g.id,
-                          text: messageFor(g, event, type, style, link(g)),
-                        });
-                      }}
-                    >
-                      {selectedRecipients.map((g) => (
-                        <option key={g.id} value={g.id}>
-                          {g.name}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  <Field label="תוכן ההודעה">
-                    <textarea
-                      rows="8"
-                      value={preview.text}
-                      onChange={(e) =>
-                        setPreview({ ...preview, text: e.target.value })
-                      }
-                    />
-                  </Field>
-                  {(() => {
-                    let phone = previewGuest.phone.replace(/\D/g, "");
-                    if (phone.startsWith("0")) phone = "972" + phone.slice(1);
-                    return phone.length >= 9 && phone.length <= 15 ? (
-                      <a
+              {recipients.map((guest) => {
+                const phone = guest.phone?.trim();
+                return (
+                  <div className="recipient" key={guest.id}>
+                    <div className="recipient-info">
+                      <strong>{guest.name}</strong>
+                      <small className="block">
+                        אישורי שליחה: {guest.sent?.length || 0}
+                      </small>
+                    </div>
+                    <div className="recipient-actions">
+                      <button
+                        type="button"
                         className="button"
-                        href={`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(preview.text)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => openMessage(e, previewGuest.id, type)}
+                        onClick={() =>
+                          copyRecipientText(
+                            guest.id,
+                            messageFor(guest, event, type, style, link(guest)),
+                            "ההודעה הועתקה",
+                          )
+                        }
                       >
-                        פתיחת WhatsApp <Arrow />
-                      </a>
-                    ) : (
-                      <p>נדרש מספר טלפון תקין כדי לפתוח WhatsApp.</p>
-                    );
-                  })()}{" "}
-                  <button
-                    disabled={busy}
-                    onClick={() =>
-                      action(
-                        () => api.markSent(preview.id, type),
-                        "השליחה סומנה ידנית",
-                      )
-                    }
-                  >
-                    אני מאשר/ת ששלחתי בפועל
-                  </button>
-                </div>
-              )}
+                        העתקת הודעה
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!phone}
+                        onClick={() =>
+                          copyRecipientText(guest.id, phone, "המספר הועתק")
+                        }
+                      >
+                        העתקת מספר
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() =>
+                          action(
+                            () => api.markSent(guest.id, type),
+                            "השליחה סומנה ידנית",
+                          )
+                        }
+                      >
+                        סימון כנשלחה
+                      </button>
+                    </div>
+                    {copied?.id === guest.id && (
+                      <small className="recipient-feedback" role="status">
+                        {copied.feedback}
+                      </small>
+                    )}
+                  </div>
+                );
+              })}
             </section>
           )}
           {tab === "event" && (

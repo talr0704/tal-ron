@@ -87,47 +87,39 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
   );
   await page.getByLabel("תבנית", { exact: true }).selectOption("initial");
 
-  await page
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  const recipient = page
     .locator(".recipient")
-    .filter({ hasText: "בדיקת אורח" })
-    .getByRole("checkbox")
-    .check();
-  await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
-  const message = await page.getByLabel("תוכן ההודעה").inputValue();
-  expect(message).toContain("/i/");
-  expect(message).toContain("💛");
+    .filter({ hasText: "בדיקת אורח" });
+  await expect(recipient.getByRole("checkbox")).toHaveCount(0);
+  await recipient.getByRole("button", { name: "העתקת מספר" }).click();
+  await expect(recipient.getByRole("status")).toHaveText("המספר הועתק");
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(
+    "0500000000",
+  );
+
+  await recipient.getByRole("button", { name: "העתקת הודעה" }).click();
+  await expect(recipient.getByRole("status")).toHaveText("ההודעה הועתקה");
+  const message = await page.evaluate(() => navigator.clipboard.readText());
+  expect(message).toContain("היי בדיקת אורח 💛");
+  expect(message).toMatch(/\/i\/[a-f0-9]{64}/);
   expect(message).toContain("💍");
   expect(message).toContain("🤍");
-  const wa = page.getByRole("link", { name: "פתיחת WhatsApp" });
-  const draftUrl = new URL(await wa.getAttribute("href"));
-  expect(draftUrl.origin + draftUrl.pathname).toBe(
-    "https://api.whatsapp.com/send",
-  );
-  expect(draftUrl.searchParams.get("phone")).toBe("972500000000");
+  await expect(recipient).toContainText("אישורי שליחה: 0");
+  await recipient.getByRole("button", { name: "סימון כנשלחה" }).click();
+  await expect(recipient).toContainText("אישורי שליחה: 1");
 
-  await context.route("https://api.whatsapp.com/send?*", (route) =>
-    route.fulfill({ body: "WhatsApp draft test" }),
-  );
-  const request = context.waitForEvent("request", (req) =>
-    req.url().startsWith("https://api.whatsapp.com/send?"),
-  );
-  await wa.click();
-  expect(new URL((await request).url()).searchParams.get("text")).toBe(message);
-  await expect(
-    page.locator(".recipient").filter({ hasText: "בדיקת אורח" }),
-  ).toContainText("אישורי שליחה: 0");
-  await page.getByRole("button", { name: "אני מאשר/ת ששלחתי בפועל" }).click();
-  await expect(
-    page.locator(".recipient").filter({ hasText: "בדיקת אורח" }),
-  ).toContainText("אישורי שליחה: 1");
   await page.getByLabel("תבנית", { exact: true }).selectOption("pending");
-  await page
-    .locator(".recipient")
-    .filter({ hasText: "בדיקת אורח" })
-    .getByRole("checkbox")
-    .check();
-  await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
-  await page.getByRole("button", { name: "אני מאשר/ת ששלחתי בפועל" }).click();
+  await page.getByLabel("סגנון", { exact: true }).selectOption("formal");
+  await recipient.getByRole("button", { name: "העתקת הודעה" }).click();
+  await expect(recipient.getByRole("status")).toHaveText("ההודעה הועתקה");
+  const reminder = await page.evaluate(() => navigator.clipboard.readText());
+  expect(reminder).toContain("בדיקת אורח שלום רב");
+  expect(reminder).toContain("טרם התקבל אישור הגעתכם");
+  expect(reminder.match(/\/i\/[a-f0-9]{64}/)?.[0]).toBe(
+    message.match(/\/i\/[a-f0-9]{64}/)?.[0],
+  );
+  await recipient.getByRole("button", { name: "סימון כנשלחה" }).click();
   await expect(
     page.locator(".recipient").filter({ hasText: "בדיקת אורח" }),
   ).toContainText("אישורי שליחה: 2");
@@ -347,7 +339,7 @@ test("admin can cancel or confirm deletion and the deleted invite stops working"
   await expect(page.getByRole("alert")).toContainText("הקישור אינו תקין");
 });
 
-test("WhatsApp preview rechecks eligibility when a guest replies in another tab", async ({
+test("marking a WhatsApp reminder checks eligibility after a guest replies in another tab", async ({
   page,
   context,
 }) => {
@@ -356,9 +348,6 @@ test("WhatsApp preview rechecks eligibility when a guest replies in another tab"
   const recipient = page
     .locator(".recipient")
     .filter({ hasText: "נועה ישראלי" });
-  await recipient.getByRole("checkbox").check();
-  await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
-
   const invitation = await context.newPage();
   await invitation.goto("/i/demo");
   await invitation.getByRole("radio", { name: "אולי", exact: true }).check();
@@ -369,8 +358,9 @@ test("WhatsApp preview rechecks eligibility when a guest replies in another tab"
   await page.reload();
   await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
   await page.getByLabel("תבנית").selectOption("maybe");
-  await recipient.getByRole("checkbox").check();
-  await page.getByRole("button", { name: /תצוגה מקדימה/ }).click();
+  await expect(
+    recipient.getByRole("button", { name: "העתקת הודעה" }),
+  ).toBeVisible();
 
   const updatedInvitation = await context.newPage();
   await updatedInvitation.goto("/i/demo");
@@ -386,12 +376,11 @@ test("WhatsApp preview rechecks eligibility when a guest replies in another tab"
   );
   await updatedInvitation.close();
 
-  await page.getByRole("link", { name: "פתיחת WhatsApp" }).click();
-  await expect(page.getByRole("alert")).toContainText("המוזמן כבר אינו מתאים");
+  await recipient.getByRole("button", { name: "סימון כנשלחה" }).click();
+  await expect(page.getByRole("alert")).toContainText("מסטטוס ההגעה הנוכחי");
+  await page.getByRole("button", { name: "מוזמנים ואישורי הגעה" }).click();
+  await page.getByRole("button", { name: "הזמנות ותזכורות" }).click();
   await expect(recipient).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "פתיחת WhatsApp" })).toHaveCount(
-    0,
-  );
 });
 
 test("admin imports Excel rows and preserves leading zeros in phone text", async ({
