@@ -188,8 +188,47 @@
   width: 100%;
 }
 
-/* Both eyelid frames share the same crop in the original portrait coordinates. */
+/* The expression sheets contain 16 frames aligned to the original portrait. */
+.guest-site :is(.couple-smile, .couple-gaze) {
+  position: absolute;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: 1600% 100%;
+}
+
+.guest-site .couple-smile {
+  left: 38.8889%;
+  top: 24.7788%;
+  width: 32.2222%;
+  aspect-ratio: 290 / 154;
+  background-image: url("/images/gouache/couple-smile-frames.webp");
+  animation: couple-expressions 10s infinite;
+}
+
+.guest-site .couple-gaze {
+  inset: 0;
+  background-image: url("/images/gouache/couple-gaze-frames.webp");
+  animation: couple-expressions 10s -6s infinite;
+}
+
+@keyframes couple-expressions {
+  0%, 16%, 100% {
+    background-position: left;
+    animation-timing-function: steps(15, end);
+  }
+  44%, 56% {
+    background-position: right;
+    animation-timing-function: steps(15, end);
+  }
+  84% {
+    background-position: left;
+  }
+}
+
+/* The open and half-closed eyes share the same crop in the portrait. */
 .guest-site .couple-eyes {
+  position: absolute;
+  aspect-ratio: 320 / 180;
   left: 35.5556%;
   top: 17.6991%;
   width: 35.5556%;
@@ -532,6 +571,10 @@
   .guest-site *::before {
     animation: none !important;
     transition: none !important;
+  }
+
+  .guest-site :is(.couple-smile, .couple-gaze) {
+    display: none;
   }
 
   .guest-site .bloom-frame-5 {

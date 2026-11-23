@@ -32,10 +32,10 @@ export function Couple({ image }) {
                 className="couple-base"
                 alt="טל ורון שוכבים שלובי זרועות על הדשא"
               />
-              <Art
-                name="couple-eyes-open"
-                className="couple-eyes couple-eyes-open"
-              />
+              <span className="couple-smile" aria-hidden="true" />
+              <span className="couple-eyes couple-eyes-open" aria-hidden="true">
+                <span className="couple-gaze" />
+              </span>
               <Art
                 name="couple-eyes-half"
                 className="couple-eyes couple-eyes-half"
