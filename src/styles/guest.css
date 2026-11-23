@@ -396,6 +396,14 @@
   padding: 14px 0 12px;
 }
 
+.guest-site .rsvp-greeting:has(+ .response-result-yes) {
+  margin-bottom: 12px;
+}
+
+.guest-site .response-result-yes {
+  padding-top: 0;
+}
+
 .guest-site .saved-heading {
   margin: 4px 0 14px;
   color: #171610;
@@ -463,7 +471,7 @@
 }
 
 .guest-site :is(.gouache-bloom, .saved-flower) {
-  width: clamp(100px, 32vw, 132px);
+  width: clamp(92px, 29vw, 120px);
   aspect-ratio: 336 / 308;
 }
 
