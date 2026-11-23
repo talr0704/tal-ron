@@ -56,6 +56,7 @@ export default function Admin() {
     [filter, setFilter] = useState("all"),
     [side, setSide] = useState("all"),
     [messageCount, setMessageCount] = useState("all"),
+    [selectedIds, setSelectedIds] = useState([]),
     [edit, setEdit] = useState(null),
     [type, setType] = useState("initial"),
     [style, setStyle] = useState("casual"),
@@ -142,6 +143,8 @@ export default function Admin() {
       (messageCount === "all" ||
         (g.sent?.length ?? 0) === Number(messageCount)),
   );
+  const selection = new Set(selectedIds);
+  const selectedGuests = guests.filter((guest) => selection.has(guest.id));
   const recipients = guests.filter((guest) => canMessageGuest(guest, type));
   const unsent = recipients.filter(
     (guest) => !guest.sent?.some((entry) => entry.type === type),
@@ -177,7 +180,42 @@ export default function Admin() {
     return action(async () => {
       await api.deleteGuest(guest.id);
       setGuests((current) => current.filter(({ id }) => id !== guest.id));
+      setSelectedIds((current) => current.filter((id) => id !== guest.id));
     }, "המוזמן נמחק");
+  }
+  function removeGuests() {
+    const count = selectedGuests.length;
+    if (
+      busy ||
+      !count ||
+      !window.confirm(
+        `למחוק ${count} הזמנות? התשובות שנשמרו יימחקו והקישורים האישיים יבוטלו.`,
+      )
+    )
+      return;
+
+    return action(async () => {
+      const deleted = new Set();
+      // Limit concurrent calls while keeping each invitation and its link atomic.
+      for (let start = 0; start < count; start += 8) {
+        const batch = selectedGuests.slice(start, start + 8);
+        const results = await Promise.allSettled(
+          batch.map(async ({ id }) => api.deleteGuest(id)),
+        );
+        results.forEach(({ status }, index) => {
+          if (status === "fulfilled") deleted.add(batch[index].id);
+        });
+      }
+      setGuests((current) => current.filter(({ id }) => !deleted.has(id)));
+      setSelectedIds((current) => current.filter((id) => !deleted.has(id)));
+      if (deleted.size !== count) {
+        const currentGuests = await api.list().catch(() => null);
+        if (currentGuests) setGuests(currentGuests);
+        throw Error(
+          `המחיקה אושרה עבור ${deleted.size} מתוך ${count} הזמנות. אפשר לנסות שוב עבור ההזמנות שנותרו.`,
+        );
+      }
+    }, `נמחקו ${count} הזמנות`);
   }
   async function copyRecipientText(id, text, feedback) {
     setCopied(null);
@@ -372,10 +410,47 @@ export default function Admin() {
                   ))}
                 </select>
               </div>
+              <div
+                className="toolbar"
+                role="group"
+                aria-label="בחירת מוזמנים למחיקה"
+              >
+                <button
+                  type="button"
+                  disabled={
+                    busy ||
+                    !guests.length ||
+                    selectedGuests.length === guests.length
+                  }
+                  onClick={() => setSelectedIds(guests.map(({ id }) => id))}
+                >
+                  בחירת כל המוזמנים ({guests.length})
+                </button>
+                {selectedGuests.length > 0 && (
+                  <>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => setSelectedIds([])}
+                    >
+                      ניקוי בחירה
+                    </button>
+                    <button
+                      type="button"
+                      className="delete-guest"
+                      disabled={busy}
+                      onClick={removeGuests}
+                    >
+                      מחיקת הנבחרים ({selectedGuests.length})
+                    </button>
+                  </>
+                )}
+              </div>
               <div className="tablewrap">
                 <table>
                   <thead>
                     <tr>
+                      <th scope="col">בחירה</th>
                       {[
                         "שם",
                         "צד",
@@ -392,6 +467,22 @@ export default function Admin() {
                   <tbody>
                     {shown.map((g) => (
                       <tr key={g.id}>
+                        <td>
+                          <input
+                            type="checkbox"
+                            aria-label={`בחירה למחיקה של ${g.name}`}
+                            checked={selection.has(g.id)}
+                            disabled={busy}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              setSelectedIds((current) =>
+                                checked
+                                  ? [...current, g.id]
+                                  : current.filter((id) => id !== g.id),
+                              );
+                            }}
+                          />
+                        </td>
                         <td>
                           <strong>{g.name}</strong>
                           <small className="block">{g.phone}</small>

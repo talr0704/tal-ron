@@ -459,3 +459,40 @@ test("send queue skips, advances after confirmation and remembers sent templates
   await page.getByLabel("תבנית", { exact: true }).selectOption("pending");
   await expect(page.getByText(/נותרו בתור: 3/)).toBeVisible();
 });
+
+test("admin selects guests individually or selects the whole list across filters", async ({
+  page,
+}) => {
+  await page.goto("/admin");
+  const first = page.getByRole("checkbox", {
+    name: "בחירה למחיקה של נועה ישראלי",
+  });
+  const second = page.getByRole("checkbox", {
+    name: "בחירה למחיקה של איתי כהן",
+  });
+  await first.check();
+  await second.check();
+  const removeBoth = page.getByRole("button", { name: "מחיקת הנבחרים (2)" });
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await removeBoth.click();
+  await expect(first).toBeChecked();
+  await expect(second).toBeChecked();
+  await page.getByRole("button", { name: "ניקוי בחירה" }).click();
+  await expect(first).not.toBeChecked();
+  await expect(second).not.toBeChecked();
+
+  const search = page.getByRole("textbox", { name: "חיפוש מוזמנים" });
+  await search.fill("נועה");
+  await expect(second).toHaveCount(0);
+  await page.getByRole("button", { name: "בחירת כל המוזמנים (2)" }).click();
+  await expect(first).toBeChecked();
+  page.once("dialog", (dialog) => dialog.accept());
+  await removeBoth.click();
+  await expect(page.getByRole("status")).toContainText("נמחקו 2 הזמנות");
+  await search.clear();
+  await expect(page.getByRole("checkbox")).toHaveCount(0);
+  await expect(page.getByText("לא נמצאו מוזמנים.")).toBeVisible();
+
+  await page.goto("/i/demo");
+  await expect(page.getByRole("alert")).toContainText("הקישור אינו תקין");
+});
