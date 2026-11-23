@@ -129,6 +129,20 @@ test("admin creates capped invitation, CSV export and manual WhatsApp status", a
   await expect(history).not.toContainText("תזכורות שנשלחו");
   await expect(history).toContainText("הזמנה ראשונית: 1");
   await expect(history).toContainText("תזכורת לטרם השיבו: 1");
+  const messageCount = page.getByLabel("סינון לפי מספר הודעות שנשלחו");
+  const unanswered = page.getByRole("row").filter({ hasText: "נועה ישראלי" });
+  await messageCount.selectOption("0");
+  await expect(unanswered).toBeVisible();
+  await expect(history).toHaveCount(0);
+  await messageCount.selectOption("2");
+  await expect(history).toBeVisible();
+  await expect(unanswered).toHaveCount(0);
+  await page.getByLabel("סינון צד").selectOption("ron");
+  await expect(history).toHaveCount(0);
+  await messageCount.selectOption("all");
+  await expect(
+    page.getByRole("row").filter({ hasText: "איתי כהן" }),
+  ).toBeVisible();
 });
 test("landing page is RTL and fits desktop/mobile", async ({
   page,

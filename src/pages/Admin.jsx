@@ -55,6 +55,7 @@ export default function Admin() {
     [search, setSearch] = useState(""),
     [filter, setFilter] = useState("all"),
     [side, setSide] = useState("all"),
+    [messageCount, setMessageCount] = useState("all"),
     [edit, setEdit] = useState(null),
     [type, setType] = useState("initial"),
     [style, setStyle] = useState("casual"),
@@ -126,11 +127,20 @@ export default function Admin() {
         </form>
       </main>
     );
+  const messageCounts = [
+    ...new Set([
+      0,
+      ...guests.map((guest) => guest.sent?.length ?? 0),
+      ...(messageCount === "all" ? [] : [Number(messageCount)]),
+    ]),
+  ].sort((a, b) => a - b);
   const shown = guests.filter(
     (g) =>
       (g.name + " " + g.phone).includes(search) &&
       (filter === "all" || (g.response?.status || "pending") === filter) &&
-      (side === "all" || g.side === side),
+      (side === "all" || g.side === side) &&
+      (messageCount === "all" ||
+        (g.sent?.length ?? 0) === Number(messageCount)),
   );
   const recipients = guests.filter((guest) => canMessageGuest(guest, type));
   const unsent = recipients.filter(
@@ -346,6 +356,20 @@ export default function Admin() {
                   <option value="all">שני הצדדים</option>
                   <option value="tal">הצד של טל</option>
                   <option value="ron">הצד של רון</option>
+                </select>
+                <select
+                  aria-label="סינון לפי מספר הודעות שנשלחו"
+                  value={messageCount}
+                  onChange={(e) => setMessageCount(e.target.value)}
+                >
+                  <option value="all">כל כמויות ההודעות</option>
+                  {messageCounts.map((count) => (
+                    <option key={count} value={count}>
+                      {count === 1
+                        ? "הודעה אחת נשלחה"
+                        : `${count} הודעות נשלחו`}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="tablewrap">
