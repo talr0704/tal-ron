@@ -446,7 +446,12 @@ export default function Admin() {
                   </>
                 )}
               </div>
-              <div className="tablewrap">
+              <div
+                className="tablewrap"
+                role="region"
+                aria-label="טבלת מוזמנים"
+                tabIndex={0}
+              >
                 <table>
                   <thead>
                     <tr>
